@@ -38,9 +38,9 @@ Experience the tool directly in your browser:
 
 Here are some demonstration outputs and source samples processed using **Fluid Mesh Studio HD**:
 
-<p align="center">
+<p align="left">
+   <img src="assets/sample-worldofreel.jpg" alt="Cinematic Visual Sample" width="30%" />
   <img src="assets/sample-artstation.jpg" alt="ArtStation Artwork Sample" width="30%" />
-  <img src="assets/sample-worldofreel.jpg" alt="Cinematic Visual Sample" width="30%" />
   <img src="assets/sample-halong.jpg" alt="Ha Long Bay Landscape" width="30%" />
 </p>
 
