@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluid Mesh Studio HD</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+<div class="header-top"><button class="lang-toggle" id="langBtn">EN / VI</button></div>
+<h1 id="t_title">🌊 Fluid Mesh Studio HD</h1>
+<p class="sub" id="t_sub">Advanced Generative Art & Color DNA Analyzer. Features RAM-safe architecture, Interactive Cards, and Palette Export.</p>
+
+<div class="card">
+<div class="section-title"><span>1</span> <b id="t_sec1">Source Data</b></div>
+<div class="drop" id="drop"><strong id="t_drop">📁 Drop Object Images Here</strong><span class="muted" id="t_drop_sub">Extracts highlights & generates fluid art</span></div>
+<input id="files" type="file" accept="image/*" multiple>
+<div class="preview" id="preview"></div>
+
+<!-- HÀNG 1: BASIC OPTIONS -->
+<div class="group-title" id="t_grp1">1. Basic Options</div>
+<div class="grid-dropdowns">
+  <label><span id="t_name">Object Name</span><input id="heroName" type="text" placeholder="e.g. Aetheria"></label>
+  <label><span id="t_crop">Color Source Region</span><select id="crop">
+      <option value="full" id="t_c_full">Full Image</option>
+      <option value="center" id="t_c_center">Center Crop</option>
+      <option value="focus" id="t_c_focus">Focus on Object</option>
+      <option value="manual" style="font-weight:bold; color:var(--accent)" id="t_c_manual">🎯 Manual Crop Tool</option>
+  </select></label>
+  <label><span id="t_style">Render Style</span><select id="styleMode">
+    <option value="fluid" id="t_s_fluid">Mesh Glow (Smooth Blend)</option>
+    <option value="paper" id="t_s_paper">Paper Cut (Hard Shadows)</option>
+    <option value="aurora" id="t_s_aurora">Aurora (Screen Layers)</option>
+    <option value="polygon" id="t_s_polygon">Polygon (Angular Shapes)</option>
+  </select></label>
+  
+  <label><span id="t_angle">Flow Direction</span>
+    <div class="inline-group">
+      <select id="angleMode" style="flex:1">
+        <option value="random" id="t_a_rand">Random</option>
+        <option value="0" id="t_a_0">Horizontal (0°)</option>
+        <option value="90" id="t_a_90">Vertical (90°)</option>
+        <option value="45" id="t_a_45">Diagonal (45°)</option>
+        <option value="custom" id="t_a_custom" style="font-weight:bold; color:var(--accent)">📐 Custom Angle</option>
+      </select>
+      <input type="number" id="customAngle" class="hidden" placeholder="Deg(15)" style="flex:1;">
+    </div>
+  </label>
+  
+  <label><span id="t_ratio">Aspect Ratio</span>
+    <div class="inline-group">
+      <select id="ratio" style="flex:1">
+        <option value="1">Square (1:1)</option>
+        <option value="1.7777">Landscape (16:9)</option>
+        <option value="0.5625">Portrait (9:16)</option>
+        <option value="custom" id="t_r_custom" style="font-weight:bold; color:var(--accent)">📐 Custom Ratio</option>
+      </select>
+      <div id="customRatioBox" class="hidden" style="flex:1.2; display:flex; gap:5px;">
+         <input type="number" id="customRatioW" placeholder="W" min="1">
+         <span style="color:white; align-self:center;">:</span>
+         <input type="number" id="customRatioH" placeholder="H" min="1">
+      </div>
+    </div>
+  </label>
+  
+  <label><span id="t_size">Resolution</span>
+    <div class="inline-group">
+      <select id="size" style="flex:1">
+          <option value="1024">HD — 1024px</option>
+          <option value="1920">Full HD — 1920px</option>
+          <option value="2560">2K — 2560px</option>
+          <option value="3840">4K — 3840px</option>
+          <option value="custom" style="font-weight:bold; color:var(--accent)" id="t_sz_custom">📏 Custom Size</option>
+      </select>
+      <input type="number" id="customSize" class="hidden" placeholder="Max: 4096" min="500" max="4096" style="flex:1">
+    </div>
+  </label>
+</div>
+
+<!-- HÀNG 2: PARAMETER TUNING -->
+<div class="group-title" id="t_grp2">2. Parameter Tuning</div>
+<div class="grid-sliders">
+  <label><span id="t_sat">Saturate Filter (Skip Grays)</span><div class="range"><input id="sat" type="range" min="0" max="80" value="10"><output id="satVal">10%</output></div></label>
+  <label><span id="t_blobs">Wave Layers</span><div class="range"><input id="blobs" type="range" min="3" max="100" value="30"><output id="blobVal">30</output></div></label>
+  <label><span id="t_soft">Glow / Shadow</span><div class="range"><input id="soft" type="range" min="0" max="100" value="65"><output id="softVal">65%</output></div></label>
+  <label><span id="t_grain">Film Grain</span><div class="range"><input id="grain" type="range" min="0" max="25" value="0"><output id="grainVal">0%</output></div></label>
+</div>
+
+<!-- ACTIONS -->
+<div class="main-actions">
+  <button class="primary" id="go" style="padding:15px 32px; font-size:16px;">✨ <span id="t_go">Generate Fluid Art</span></button>
+  <div class="status" id="status" style="margin-left:15px;">No images selected.</div>
+</div>
+</div>
+
+<!-- KẾT QUẢ RENDER -->
+<div class="card hidden" id="resultCard">
+<div class="resultGrid">
+  <div class="canvasWrap">
+      <canvas id="out" width="1024" height="1024"></canvas>
+      
+      <!-- HUE SHIFT SLIDER -->
+      <div class="hue-box" id="hueBox">
+         <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:bold;">
+             <span>🎨 <span id="t_hue">Color Mood (Hue Shift)</span></span>
+             <span id="hueVal">0°</span>
+         </div>
+         <input type="range" class="hue-slider" id="hueShift" min="0" max="360" value="0">
+      </div>
+
+      <div id="paletteBox" class="palette-container hidden"></div>
+      
+      <!-- MENU EXPORT -->
+      <div class="export-bar">
+          <button class="primary" id="dlArtBtn">⬇ <span id="t_btn_dl">Download PNG</span></button>
+          <button class="secondary" id="viewArtBtn">🔍 <span id="t_btn_view">View Large</span></button>
+          <button class="secondary" id="openCardStudioBtn">🎴 <span id="t_btn_card">Card Studio</span></button>
+          <!-- NÚT MỚI: XUẤT BẢNG MÀU -->
+          <button class="secondary" id="dlPaletteBtn">🎨 <span id="t_btn_pal">Export Palette</span></button>
+          <button class="secondary" id="viewAnimBtn">▶ <span id="t_btn_anim">Live Animation</span></button>
+      </div>
+      <button class="secondary" id="saveCompare" style="width:100%; margin-top:14px; padding:12px; border:1px solid var(--accent); color:var(--accent);">➕ <span id="t_save">Save to Board</span></button>
+  </div>
+  <!-- METRICS -->
+  <div class="metrics" id="metrics">
+      <div id="metricsText"></div>
+      <div class="radar-box"><canvas id="radarChart" width="340" height="340"></canvas></div>
+  </div>
+</div>
+</div>
+
+<!-- BẢNG SO SÁNH -->
+<div class="card" id="compareCard">
+<div class="compareHead">
+  <div><b id="t_board" style="font-size:18px;">🏆 Comparison Board</b></div>
+  <div style="display:flex; gap:10px; flex-wrap:wrap">
+    <button class="primary hidden" id="makeComposite">🖼 <span id="t_btn_comp">Create Composite</span></button>
+    <button class="secondary" id="clearCompare"><span id="t_btn_clearboard">Clear Board</span></button>
+  </div>
+</div>
+<div id="compareWrapper"><div class="muted" id="t_empty_board">No objects saved yet.</div></div>
+</div>
+</div>
+
+<!-- MODALS -->
+<!-- 1. Modal Xem Lớn -->
+<div id="lightboxModal" class="modal hidden">
+  <div style="position:relative; max-width:95vw; max-height:90vh; display:flex; justify-content:center; align-items:center;">
+    <button class="lightbox-close" onclick="$('lightboxModal').classList.add('hidden')" title="Close">✕</button>
+    <img id="lightboxImg" src="" style="max-width:100%; max-height:90vh; border-radius:12px; border:2px solid #fff; box-shadow:0 10px 40px rgba(0,0,0,0.85);">
+  </div>
+</div>
+
+<!-- 2. Modal Thiết Kế Thẻ (Card Studio - ĐÃ SỬA DOM ĐỘC LẬP TÁCH BẠCH) -->
+<div id="cardModal" class="modal hidden">
+  <div class="modal-content" style="width: 1050px; max-width: 95vw; overflow-y:auto; padding:15px;">
+    <h3 style="margin:0 0 10px 0;text-align:center;font-size:22px;" id="t_cs_title">🎴 Info Card Studio</h3>
+    <div style="display:flex; gap:25px; flex-wrap:wrap; justify-content:center; width:100%;">
+      
+      <!-- Cột trái: Tool chỉnh sửa 2 Tab -->
+      <div style="width: 300px; background:var(--card2); padding:15px; border-radius:12px; display:flex; flex-direction:column; align-items:center; flex-shrink:0;">
+         <div style="display:flex; gap:10px; margin-bottom:20px; width:100%;">
+             <button id="tabAv" class="primary" style="flex:1; padding:8px;">👤 <span id="t_tab_av">Avatar</span></button>
+             <button id="tabCov" class="secondary" style="flex:1; padding:8px;">🖼️ <span id="t_tab_cov">Cover</span></button>
+         </div>
+         
+         <!-- Khung Avatar (200x200 Tròn) -->
+         <div id="avatarBox" style="width:200px; height:200px; border-radius:50%; overflow:hidden; border:4px solid var(--accent); margin:0 auto; position:relative; background:#000; box-shadow:0 10px 25px rgba(0,0,0,0.5); display:block;">
+            <img id="avImg" style="position:absolute; top:0; left:0; transform-origin:top left; cursor:grab; user-select:none; touch-action:none;" draggable="false">
+         </div>
+
+         <!-- Khung Cover (252x182 Chữ nhật chuẩn tỉ lệ 18:13 của thẻ) -->
+         <div id="coverBox" style="width:252px; height:182px; border-radius:8px; overflow:hidden; border:2px solid var(--accent); margin:0 auto; position:relative; background:#000; box-shadow:0 10px 25px rgba(0,0,0,0.5); display:none;">
+            <img id="covImg" style="position:absolute; top:0; left:0; transform-origin:top left; cursor:grab; user-select:none; touch-action:none;" draggable="false">
+         </div>
+         
+         <label style="margin-top:25px; width:100%;"><span id="t_cs_zoom">Zoom:</span> 
+            <input type="range" id="studioZoom" min="1" max="4" step="0.05" value="1">
+         </label>
+         <p style="font-size:12px; color:var(--muted); text-align:center; margin-top:10px;" id="t_cs_hint">*Drag image to pan / adjust.</p>
+         <button class="primary" id="updateCardBtn" style="width:100%; margin-top:15px;">🔄 <span id="t_cs_update">Update Preview</span></button>
+      </div>
+
+      <!-- Cột phải: Live Preview -->
+      <div style="flex:1; display:flex; justify-content:center; background:#0d0f14; padding:15px; border-radius:12px; border:1px solid #363c49; min-width:300px;">
+         <img id="cardPreviewImg" style="max-width: 100%; max-height: 60vh; object-fit:contain; border-radius:8px; box-shadow:0 5px 20px rgba(0,0,0,0.5);">
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;justify-content:center; margin-top:15px; width:100%;">
+      <button class="primary" id="finalDlCardBtn" style="padding:12px 30px; font-size:15px;">⬇ <span id="t_cs_dl">Download Card PNG</span></button>
+      <button class="secondary" onclick="$('cardModal').classList.add('hidden')"><span id="t_cs_close">Close</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- 3. Modal Hoạt Ảnh -->
+<div id="animModal" class="modal hidden">
+  <div class="modal-content">
+    <h3 style="margin:0;text-align:center" id="t_m_anim">Live Animation Preview</h3>
+    <div class="canvasWrap" style="width:100%; max-width:550px; aspect-ratio:1/1;">
+        <canvas id="animCanvas" width="800" height="800" style="width:100%; height:100%;"></canvas>
+    </div>
+    <div style="display:flex; gap:10px;">
+        <button class="primary" id="dlAnimBtn">⬇ <span id="t_btn_dl_anim">Download WebM</span></button>
+        <button class="secondary" onclick="closeAnimModal()"><span id="t_btn_close_anim">Close</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- 4. Modal Composite Image -->
+<div id="compositeModal" class="modal hidden">
+  <div class="modal-content">
+    <h3 style="margin:0;text-align:center" id="t_m_comp">HD Composite Board</h3>
+    <img id="compositePreview" src="">
+    <div style="display:flex;gap:12px;justify-content:center">
+      <button class="primary" id="downloadComposite">⬇ <span id="t_btn_dl_comp">Download Composite</span></button>
+      <button class="secondary" onclick="$('compositeModal').classList.add('hidden')"><span id="t_btn_close_comp">Close</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- 5. Modal Manual Crop -->
+<div id="manualCropModal" class="modal hidden">
+  <div class="modal-content" style="width: 500px;">
+    <h3 style="margin:0;text-align:center">Manual Region (<span id="cropIdx">1</span>/<span id="cropTotal">1</span>)</h3>
+    <div style="position:relative; width: 100%; margin: auto; background:#111; border-radius:8px; overflow:hidden; touch-action: none;">
+      <canvas id="cropCanvas" style="width:100%; display:block; cursor: move;"></canvas>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px; background:var(--card2); padding:10px 15px; border-radius:8px; width:100%;">
+      <span style="font-size:14px; white-space:nowrap;">🔍 Zoom:</span>
+      <input type="range" id="cropZoomSlider" min="0.1" max="0.8" step="0.01" value="0.28" style="flex-grow:1; cursor:pointer;">
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center; flex-wrap:wrap">
+      <button class="primary" id="btnCropNext">Save & Next</button>
+      <button class="secondary" id="btnCropApplyAll">Apply to All</button>
+      <button class="secondary" id="btnCropCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- 1. KHAI BÁO BIẾN TOÀN CỤC TRUNG TÂM -->
+<script>
+const dict = {
+    en: {
+        t_name_ph: "e.g. Aetheria", t_title: "🌊 Fluid Mesh Studio HD", t_sub: "Advanced Generative Art & Color DNA Analyzer. Features RAM-safe architecture, Interactive Cards, and Palette Export.",
+        t_sec1: "Source Data", t_sec2: "Parameter Tuning", t_grp1: "1. Basic Options", t_grp2: "2. Parameter Tuning",
+        t_drop: "📁 Drop Object Images Here", t_drop_sub: "Extracts highlights & generates fluid art",
+        t_name: "Object Name", t_style: "Render Style", t_s_fluid: "Mesh Glow (Smooth Blend)", t_s_paper: "Paper Cut (Hard Shadows)", t_s_aurora: "Aurora (Screen Layers)", t_s_polygon: "Polygon (Angular Shapes)",
+        t_angle: "Flow Direction", t_a_rand: "Random", t_a_0: "Horizontal (0°)", t_a_90: "Vertical (90°)", t_a_45: "Diagonal (45°)", t_a_custom: "📐 Custom Angle",
+        t_ratio: "Aspect Ratio", t_r_custom: "📐 Custom Ratio", t_size: "Resolution", t_sz_custom: "📏 Custom Size",
+        t_blobs: "Wave Layers", t_soft: "Glow / Shadow Intensity", t_grain: "Film Grain", t_sat: "Saturate Filter (Skip Grays)",
+        t_crop: "Color Source Region", t_c_full: "Full Image", t_c_center: "Center Crop", t_c_focus: "Focus on Object", t_c_manual: "🎯 Manual Crop Tool",
+        t_go: "Generate Fluid Art", t_save: "Save to Board", t_clear: "Clear Data",
+        t_btn_dl: "Download PNG", t_btn_view: "View Large", t_btn_card: "Card Studio", t_btn_pal: "Export Palette", t_btn_anim: "Live Animation",
+        t_board: "🏆 Comparison Board (Top 4 Ranks)", t_btn_comp: "Create Composite (Max 8)", t_btn_clearboard: "Clear Board", t_empty_board: "No objects saved yet.",
+        t_cs_title: "🎴 Info Card Studio", t_cs_avatar: "Adjust View", t_tab_av: "Avatar", t_tab_cov: "Cover", t_cs_zoom: "Zoom:", t_cs_hint: "*Drag image to pan / adjust.", t_cs_update: "Update Preview", t_cs_dl: "Download Card PNG", t_cs_close: "Close Studio",
+        t_hue: "Color Mood (Hue Shift)", t_m_anim: "Live Animation Preview", t_btn_dl_anim: "Download WebM", t_btn_close_anim: "Close",
+        t_m_comp: "HD Composite Board", t_btn_dl_comp: "Download Composite", t_btn_close_comp: "Close",
+        statusEmpty: "No images selected.", statusGen: "Rendering HD vectors...", statusDone: "Graphics completed!", statusCopy: "CSS Palette copied!",
+        m_div: "Diversity", m_col: "Colorfulness", m_mon: "Monochromatic", m_bri: "Brightness", m_war: "Warmth"
+    },
+    vi: {
+        t_name_ph: "Ví dụ: Phượng vĩ", t_title: "🌊 Fluid Mesh Studio HD v5.8", t_sub: "Công cụ tạo ảnh nghệ thuật, Thẻ thông tin và Phân tích màu. Đã vá lỗi đồng bộ Avatar/Cover, chống tràn ảnh.",
+        t_sec1: "Nguồn Dữ Liệu", t_sec2: "Cấu hình Render", t_grp1: "1. Tùy Chọn Cơ Bản", t_grp2: "2. Tinh Chỉnh Thông Số",
+        t_drop: "📁 Thả ảnh vật thể vào đây", t_drop_sub: "Hỗ trợ nhận diện Highlight rực rỡ",
+        t_name: "Tên Vật thể", t_style: "Phong cách Render", t_s_fluid: "Mesh Glow (Lụa mượt)", t_s_paper: "Paper Cut (Cắt giấy)", t_s_aurora: "Aurora (Cực quang)", t_s_polygon: "Đa giác (Góc cạnh)",
+        t_angle: "Hướng dòng chảy", t_a_rand: "Ngẫu nhiên", t_a_0: "Ngang (0°)", t_a_90: "Dọc (90°)", t_a_45: "Chéo (45°)", t_a_custom: "📐 Góc Tùy chỉnh",
+        t_ratio: "Tỉ lệ khung hình", t_r_custom: "📐 Tỉ lệ tùy chỉnh", t_size: "Độ phân giải", t_sz_custom: "📏 Kích thước tự do",
+        t_blobs: "Số lượng mảng màu", t_soft: "Độ bóng/Phát sáng", t_grain: "Hạt phim (Grain)", t_sat: "Lọc màu nhạt/xám (Saturate)",
+        t_crop: "Vùng lấy màu", t_c_full: "Toàn bộ ảnh", t_c_center: "Cắt trung tâm", t_c_focus: "Tập trung vật thể", t_c_manual: "🎯 Tự chọn & Thu phóng",
+        t_go: "Tạo Fluid Art", t_save: "Lưu vào Bảng", t_clear: "Xóa dữ liệu",
+        t_btn_dl: "Tải PNG", t_btn_view: "Xem lớn", t_btn_card: "Studio Thẻ Info", t_btn_pal: "Xuất Bảng Màu", t_btn_anim: "Xem Hoạt ảnh",
+        t_board: "🏆 Bảng So Sánh Vật thể (Top 4 Xếp Hạng)", t_btn_comp: "Tạo ảnh ghép (Max 8)", t_btn_clearboard: "Xóa bảng", t_empty_board: "Chưa có vật thể nào được lưu.",
+        t_cs_title: "🎴 Studio Thiết Kế Thẻ", t_cs_avatar: "Căn chỉnh", t_tab_av: "Avatar", t_tab_cov: "Ảnh bìa", t_cs_zoom: "Thu/Phóng:", t_cs_hint: "*Dùng tay vuốt/kéo để di chuyển khung hình", t_cs_update: "Cập nhật thẻ", t_cs_dl: "Tải Thẻ PNG", t_cs_close: "Đóng Studio",
+        t_hue: "Tông Màu (Hue Shift)", t_m_anim: "Xem Trước Hoạt Ảnh", t_btn_dl_anim: "Tải Video WebM", t_btn_close_anim: "Đóng",
+        t_m_comp: "Bảng Ảnh Tổng Hợp HD", t_btn_dl_comp: "Tải Ảnh Tổng Hợp", t_btn_close_comp: "Đóng",
+        statusEmpty: "Chưa chọn ảnh.", statusGen: "Đang render đồ họa vector HD...", statusDone: "Hoàn thành xử lý đồ họa!", statusCopy: "Đã copy biến CSS Palette!",
+        m_div: "Đa dạng", m_col: "Rực rỡ", m_mon: "Đơn sắc", m_bri: "Độ sáng", m_war: "Tone ấm"
+    }
+};
+const $ = id => document.getElementById(id);
+let currentLang = 'en';
+let files=[], currentOutput=null, comparison=[], currentSaved=false, cropNormList = [];
+</script>
+
+<!-- 2. GỌI CÁC MODULE THEO THỨ TỰ PHỤ THUỘC -->
+<script src="js/color.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/crop-ui.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
