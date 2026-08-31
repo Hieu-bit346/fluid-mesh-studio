@@ -45,6 +45,6 @@ function renderMetricsText(m){
  </div>
  <div class="metric">
     <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>☀️ ${dict[currentLang].m_bri}</span><b style="color:#fff">${m.brightness.toFixed(1)}%</b></div>
-    <div class="bar"><i style="width:${m.brightness}%; background:#fff"></i></div>
+    <div class="bar"><i style="width:${m.brightness}%; background:#ffffff"></i></div>
  </div>`;
 }
