@@ -34,6 +34,27 @@ Experience the tool directly in your browser:
 
 ---
 
+## 🎨 Showcase & Visual Samples
+
+Here are some demonstration outputs and source samples processed using **Fluid Mesh Studio HD**:
+
+<p align="center">
+  <img src="assets/sample-artstation.jpg" alt="ArtStation Artwork Sample" width="30%" />
+  <img src="assets/sample-worldofreel.jpg" alt="Cinematic Visual Sample" width="30%" />
+  <img src="assets/sample-halong.jpg" alt="Ha Long Bay Landscape" width="30%" />
+</p>
+
+### 📌 Image Credits & Sources
+Special thanks to the original creators and photographers for the demo assets used in this project:
+
+1. **Digital Concept Art:** [ArtStation Artwork](https://www.artstation.com/artwork/688AdV)
+2. **Cinematic Visual Asset:** [World of Reel Article](https://www.worldofreel.com/blog/2023/10/3/g3phd7qzf6p2tmnd0d8upxyuqhocge)
+3. **Landscape Photography (Ha Long Bay):** [Báo Lao Động Media CDN](https://media-cdn-v2.laodong.vn/storage/newsportal/2023/10/12/1253579/Vinh-Ha-Long-1.jpg)
+
+> *Disclaimer: All sample images belong to their respective copyright holders and are used solely for non-commercial demonstration and open-source portfolio showcasing purposes.*
+
+---
+
 ## 📁 Project Structure
 
 ```text
