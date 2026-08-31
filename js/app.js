@@ -396,5 +396,5 @@ $('dlAnimBtn').onclick = async () => {
 
 $('clear').onclick=()=>{ files=[]; cropNormList=[]; renderInputPreview(); $('resultCard').classList.add('hidden'); };
 
-// Cuối cùng, thực thi khởi tạo
+// Finally, execute initialization
 setLang('en');
