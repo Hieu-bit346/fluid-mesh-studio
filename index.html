@@ -18,7 +18,7 @@
 <input id="files" type="file" accept="image/*" multiple>
 <div class="preview" id="preview"></div>
 
-<!-- HÀNG 1: BASIC OPTIONS -->
+<!-- ROW 1: BASIC OPTIONS -->
 <div class="group-title" id="t_grp1">1. Basic Options</div>
 <div class="grid-dropdowns">
   <label><span id="t_name">Object Name</span><input id="heroName" type="text" placeholder="e.g. Aetheria"></label>
@@ -129,7 +129,7 @@
 </div>
 </div>
 
-<!-- BẢNG SO SÁNH -->
+<!-- SS -->
 <div class="card" id="compareCard">
 <div class="compareHead">
   <div><b id="t_board" style="font-size:18px;">🏆 Comparison Board</b></div>
@@ -143,7 +143,7 @@
 </div>
 
 <!-- MODALS -->
-<!-- 1. Modal Xem Lớn -->
+<!-- 1. Modal Big See -->
 <div id="lightboxModal" class="modal hidden">
   <div style="position:relative; max-width:95vw; max-height:90vh; display:flex; justify-content:center; align-items:center;">
     <button class="lightbox-close" onclick="$('lightboxModal').classList.add('hidden')" title="Close">✕</button>
@@ -151,20 +151,20 @@
   </div>
 </div>
 
-<!-- 2. Modal Thiết Kế Thẻ (Card Studio - ĐÃ SỬA DOM ĐỘC LẬP TÁCH BẠCH) -->
+<!-- 2. Modal Card Studio -->
 <div id="cardModal" class="modal hidden">
   <div class="modal-content" style="width: 1050px; max-width: 95vw; overflow-y:auto; padding:15px;">
     <h3 style="margin:0 0 10px 0;text-align:center;font-size:22px;" id="t_cs_title">🎴 Info Card Studio</h3>
     <div style="display:flex; gap:25px; flex-wrap:wrap; justify-content:center; width:100%;">
       
-      <!-- Cột trái: Tool chỉnh sửa 2 Tab -->
+      <!-- 2 Tab -->
       <div style="width: 300px; background:var(--card2); padding:15px; border-radius:12px; display:flex; flex-direction:column; align-items:center; flex-shrink:0;">
          <div style="display:flex; gap:10px; margin-bottom:20px; width:100%;">
              <button id="tabAv" class="primary" style="flex:1; padding:8px;">👤 <span id="t_tab_av">Avatar</span></button>
              <button id="tabCov" class="secondary" style="flex:1; padding:8px;">🖼️ <span id="t_tab_cov">Cover</span></button>
          </div>
          
-         <!-- Khung Avatar (200x200 Tròn) -->
+         <!-- Khung Avatar (200x200) -->
          <div id="avatarBox" style="width:200px; height:200px; border-radius:50%; overflow:hidden; border:4px solid var(--accent); margin:0 auto; position:relative; background:#000; box-shadow:0 10px 25px rgba(0,0,0,0.5); display:block;">
             <img id="avImg" style="position:absolute; top:0; left:0; transform-origin:top left; cursor:grab; user-select:none; touch-action:none;" draggable="false">
          </div>
@@ -239,7 +239,7 @@
   </div>
 </div>
 
-<!-- 1. KHAI BÁO BIẾN TOÀN CỤC TRUNG TÂM -->
+<!-- 1. Declaration -->
 <script>
 const dict = {
     en: {
@@ -284,7 +284,7 @@ let currentLang = 'en';
 let files=[], currentOutput=null, comparison=[], currentSaved=false, cropNormList = [];
 </script>
 
-<!-- 2. GỌI CÁC MODULE THEO THỨ TỰ PHỤ THUỘC -->
+<!-- 2. Call the modules -->
 <script src="js/color.js"></script>
 <script src="js/renderer.js"></script>
 <script src="js/crop-ui.js"></script>
