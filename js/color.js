@@ -44,7 +44,7 @@ function renderMetricsText(m){
     <div class="bar"><i style="width:${m.warm}%; background:#ff7a45"></i></div>
  </div>
  <div class="metric">
-    <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>☀️ ${dict[currentLang].m_bri}</span><b style="color:#fffff">${m.brightness.toFixed(1)}%</b></div>
+    <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>☀️ ${dict[currentLang].m_bri}</span><b style="color:#ffffff">${m.brightness.toFixed(1)}%</b></div>
     <div class="bar"><i style="width:${m.brightness}%; background:#ffffff"></i></div>
  </div>`;
 }
