@@ -78,12 +78,12 @@
   </label>
 </div>
 
-<!-- HÀNG 2: PARAMETER TUNING -->
+<!-- PARAMETER TUNING -->
 <div class="group-title" id="t_grp2">2. Parameter Tuning</div>
 <div class="grid-sliders">
   <label><span id="t_sat">Saturate Filter (Skip Grays)</span><div class="range"><input id="sat" type="range" min="0" max="80" value="10"><output id="satVal">10%</output></div></label>
-  <label><span id="t_blobs">Wave Layers</span><div class="range"><input id="blobs" type="range" min="3" max="100" value="30"><output id="blobVal">30</output></div></label>
-  <label><span id="t_soft">Glow / Shadow</span><div class="range"><input id="soft" type="range" min="0" max="100" value="65"><output id="softVal">65%</output></div></label>
+  <label><span id="t_blobs">Wave Layers</span><div class="range"><input id="blobs" type="range" min="3" max="100" value="10"><output id="blobVal">10</output></div></label>
+  <label><span id="t_soft">Glow / Shadow</span><div class="range"><input id="soft" type="range" min="0" max="100" value="0"><output id="softVal">0%</output></div></label>
   <label><span id="t_grain">Film Grain</span><div class="range"><input id="grain" type="range" min="0" max="25" value="0"><output id="grainVal">0%</output></div></label>
 </div>
 
@@ -94,7 +94,7 @@
 </div>
 </div>
 
-<!-- KẾT QUẢ RENDER -->
+<!-- RENDER -->
 <div class="card hidden" id="resultCard">
 <div class="resultGrid">
   <div class="canvasWrap">
@@ -116,7 +116,6 @@
           <button class="primary" id="dlArtBtn">⬇ <span id="t_btn_dl">Download PNG</span></button>
           <button class="secondary" id="viewArtBtn">🔍 <span id="t_btn_view">View Large</span></button>
           <button class="secondary" id="openCardStudioBtn">🎴 <span id="t_btn_card">Card Studio</span></button>
-          <!-- NÚT MỚI: XUẤT BẢNG MÀU -->
           <button class="secondary" id="dlPaletteBtn">🎨 <span id="t_btn_pal">Export Palette</span></button>
           <button class="secondary" id="viewAnimBtn">▶ <span id="t_btn_anim">Live Animation</span></button>
       </div>
@@ -170,7 +169,7 @@
             <img id="avImg" style="position:absolute; top:0; left:0; transform-origin:top left; cursor:grab; user-select:none; touch-action:none;" draggable="false">
          </div>
 
-         <!-- Khung Cover (252x182 Chữ nhật chuẩn tỉ lệ 18:13 của thẻ) -->
+         <!-- Khung Cover -->
          <div id="coverBox" style="width:252px; height:182px; border-radius:8px; overflow:hidden; border:2px solid var(--accent); margin:0 auto; position:relative; background:#000; box-shadow:0 10px 25px rgba(0,0,0,0.5); display:none;">
             <img id="covImg" style="position:absolute; top:0; left:0; transform-origin:top left; cursor:grab; user-select:none; touch-action:none;" draggable="false">
          </div>
@@ -182,7 +181,7 @@
          <button class="primary" id="updateCardBtn" style="width:100%; margin-top:15px;">🔄 <span id="t_cs_update">Update Preview</span></button>
       </div>
 
-      <!-- Cột phải: Live Preview -->
+      <!-- Live Preview -->
       <div style="flex:1; display:flex; justify-content:center; background:#0d0f14; padding:15px; border-radius:12px; border:1px solid #363c49; min-width:300px;">
          <img id="cardPreviewImg" style="max-width: 100%; max-height: 60vh; object-fit:contain; border-radius:8px; box-shadow:0 5px 20px rgba(0,0,0,0.5);">
       </div>
@@ -195,7 +194,7 @@
   </div>
 </div>
 
-<!-- 3. Modal Hoạt Ảnh -->
+<!-- 3. Modal  -->
 <div id="animModal" class="modal hidden">
   <div class="modal-content">
     <h3 style="margin:0;text-align:center" id="t_m_anim">Live Animation Preview</h3>
