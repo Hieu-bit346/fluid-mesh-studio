@@ -69,8 +69,3 @@ fluid-mesh-studio/
 │   ├── storage.js    # LocalStorage management & comparison board
 │   └── app.js        # Main UI event listeners & state controller
 └── README.md         # Project documentation
-
-<img width="2048" height="760" alt="789926583_1770857050782852_4526728086700753933_n" src="https://github.com/user-attachments/assets/c6d57e3e-d954-4202-8881-41e15471c82c" />
-<img width="2048" height="737" alt="789775842_1770857097449514_1147125559042365321_n" src="https://github.com/user-attachments/assets/90c70a74-e35a-4048-96da-4904c95e6f8b" />
-<img width="2048" height="819" alt="791335182_1770857144116176_4332431700745370197_n" src="https://github.com/user-attachments/assets/b7b640a0-47fa-41db-9dfc-0f84ce69b03d" />
-
