@@ -233,13 +233,15 @@ function handleMove(e) {
     if(!isDragging) return; e.preventDefault();
     const cx = e.touches ? e.touches[0].clientX : e.clientX;
     const cy = e.touches ? e.touches[0].clientY : e.clientY;
-    
+   
     if(cardTab === 'avatar') {
-        const boxSize = 200;
-        const imgH = 200, imgW = 200 * (avImgEl.naturalWidth / avImgEl.naturalHeight);
-        avX = Math.min(0, Math.max(boxSize - (imgW * avScale), cx - startX));
-        avY = Math.min(0, Math.max(boxSize - (imgH * avScale), cy - startY));
-        avImgEl.style.transform = `translate(${avX}px, ${avY}px) scale(${avScale})`;
+    const boxSize = 200;
+    const avRatio = avImgEl.naturalWidth / avImgEl.naturalHeight;
+    const imgW = (avRatio > 1) ? 200 * avRatio : 200;
+    const imgH = (avRatio > 1) ? 200 : 200 / avRatio;
+    avX = Math.min(0, Math.max(boxSize - (imgW * avScale), cx - startX));
+    avY = Math.min(0, Math.max(boxSize - (imgH * avScale), cy - startY));
+    avImgEl.style.transform = `translate(${avX}px, ${avY}px) scale(${avScale})`;
     } else {
         const boxW = 252, boxH = 182;
         const outRatio = out.width / out.height;
@@ -266,11 +268,13 @@ window.addEventListener('touchend', handleEnd);
 $('studioZoom').oninput = (e) => {
     const scale = parseFloat(e.target.value);
     if(cardTab === 'avatar') {
-        avScale = scale;
-        const imgH = 200, imgW = 200 * (avImgEl.naturalWidth / avImgEl.naturalHeight);
-        avX = Math.min(0, Math.max(200 - (imgW * avScale), avX));
-        avY = Math.min(0, Math.max(200 - (imgH * avScale), avY));
-        avImgEl.style.transform = `translate(${avX}px, ${avY}px) scale(${avScale})`;
+    avScale = scale;
+    const avRatio = avImgEl.naturalWidth / avImgEl.naturalHeight;
+    const imgW = (avRatio > 1) ? 200 * avRatio : 200;
+    const imgH = (avRatio > 1) ? 200 : 200 / avRatio;
+    avX = Math.min(0, Math.max(200 - (imgW * avScale), avX));
+    avY = Math.min(0, Math.max(200 - (imgH * avScale), avY));
+    avImgEl.style.transform = `translate(${avX}px, ${avY}px) scale(${avScale})`;
     } else {
         covScale = scale;
         const outRatio = out.width / out.height;
@@ -290,8 +294,12 @@ $('openCardStudioBtn').onclick = async () => {
     covX = 0; covY = 0; covScale = 1;
     
     avImgEl.src = currentOutput.avatar;
-    avImgEl.style.height = '200px'; avImgEl.style.width = 'auto';
-    avImgEl.style.transform = 'translate(0px, 0px) scale(1)';
+    avImgEl.onload = () => {
+    const avRatio = avImgEl.naturalWidth / avImgEl.naturalHeight;
+    if (avRatio > 1) { avImgEl.style.height = '200px'; avImgEl.style.width = 'auto'; }
+    else { avImgEl.style.width = '200px'; avImgEl.style.height = 'auto'; }
+};
+avImgEl.style.transform = 'translate(0px, 0px) scale(1)';
     
     covImgEl.src = out.toDataURL('image/jpeg', 0.6);
     const outRatio = out.width / out.height;
@@ -336,8 +344,10 @@ async function drawCardToCanvas() {
         sAvCtx.save();
         sAvCtx.translate(avX, avY);
         sAvCtx.scale(avScale, avScale);
-        sAvCtx.drawImage(av, 0, 0, av.width, av.height, 0, 0, 200 * (av.width/av.height), 200);
-        sAvCtx.restore();
+        const avRatio = av.width / av.height;
+        let aW = (avRatio > 1) ? 200 * avRatio : 200;
+        let aH = (avRatio > 1) ? 200 : 200 / avRatio;
+        sAvCtx.drawImage(av, 0, 0, av.width, av.height, 0, 0, aW, aH);
         
         ctx.save(); ctx.beginPath(); ctx.arc(450, 560, 90, 0, Math.PI*2); ctx.closePath(); ctx.clip();
         ctx.drawImage(snapAv, 360, 470, 180, 180);
