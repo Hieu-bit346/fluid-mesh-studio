@@ -34,7 +34,21 @@ select,input[type=number],input[type=text]{width:100%;background:var(--card2);co
 .error-border { border-color: #ff3c3c !important; box-shadow: 0 0 8px rgba(255,60,60,0.3); }
 
 /* Buttons */
-.main-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:25px; align-items:center;}
+.main-actions {
+    position: sticky;
+    top: 20px;
+    z-index: 100;
+    background: rgba(24,27,34, 0.95);
+    padding: 15px 20px;
+    border-radius: 16px;
+    border: 1px solid var(--accent);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
 button{border:0;border-radius:12px;padding:12px 18px;font-weight:bold;font-size:14px;cursor:pointer;transition:0.15s; font-family:inherit; display:flex; align-items:center; justify-content:center; gap:6px}
 .primary{background:var(--accent);color:white}.secondary{background:#343945;color:white}button:active{transform:scale(0.96)}.hidden{display:none !important}
 .status{min-height:20px;margin-top:10px;color:var(--good); font-weight:600; font-size:14px;}
