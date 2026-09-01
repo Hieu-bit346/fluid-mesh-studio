@@ -68,20 +68,68 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
         }
         ctx.lineTo(diag, diag); ctx.closePath();
 
+        // ... (phần trên giữ nguyên)
+        ctx.lineTo(diag, diag); ctx.closePath();
+
         const grad = ctx.createLinearGradient(0, layer.yOffset - diag*0.2, 0, layer.yOffset + diag*0.4);
         if (params.style === 'aurora') {
-            grad.addColorStop(0, `rgba(${layer.color[0]}, ${layer.color[1]}, ${layer.color[2]}, 1)`); grad.addColorStop(1, `rgba(${layer.nextColor[0]}, ${layer.nextColor[1]}, ${layer.nextColor[2]}, 0)`);
+            grad.addColorStop(0, `rgba(${layer.color[0]}, ${layer.color[1]}, ${layer.color[2]}, 1)`); 
+            grad.addColorStop(1, `rgba(${layer.nextColor[0]}, ${layer.nextColor[1]}, ${layer.nextColor[2]}, 0)`);
         } else {
-            grad.addColorStop(0, `rgb(${layer.color.join(',')})`); grad.addColorStop(1, `rgb(${layer.nextColor.join(',')})`);
+            grad.addColorStop(0, `rgb(${layer.color.join(',')})`); 
+            grad.addColorStop(1, `rgb(${layer.nextColor.join(',')})`);
         }
 
-        if(params.soft > 0) {
-            if (params.style === 'fluid' || params.style === 'polygon') { ctx.shadowColor = `rgb(${layer.color.join(',')})`; ctx.shadowBlur = diag * 0.15 * params.soft; ctx.shadowOffsetY = 0; }
-            else if (params.style === 'paper') { ctx.shadowColor = `rgba(0,0,0, ${0.4 + params.soft*0.4})`; ctx.shadowBlur = diag * 0.01 * params.soft; ctx.shadowOffsetY = diag * 0.02 * params.soft; }
-            else if (params.style === 'aurora') { ctx.shadowColor = `rgb(${layer.color.join(',')})`; ctx.shadowBlur = diag * 0.2 * params.soft; ctx.globalAlpha = Math.max(0.08, 2.5 / params.waveCount); }
+        // Reset các giá trị bóng và alpha để tránh lỗi tràn từ vòng lặp trước
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetY = 0;
+        ctx.shadowColor = 'transparent';
+        ctx.globalAlpha = 1.0;
+        
+        const solidColor = `rgb(${layer.color.join(',')})`;
+        // BRANCH OF STYLE
+        if (params.style === 'paper') {
+            ctx.fillStyle = solidColor; 
+            if (params.soft > 0) { 
+                ctx.shadowColor = `rgba(15, 23, 42, ${0.45 + params.soft*0.2})`; 
+                ctx.shadowBlur = diag * 0.01 * params.soft; 
+                ctx.shadowOffsetY = diag * 0.02 * params.soft; 
+            }
+            ctx.fill();
+
+        } else if (params.style === 'polygon') {
+            ctx.fillStyle = grad; 
+            ctx.fill();
+            if (params.soft > 0) {
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = `rgba(255, 255, 255, ${params.soft * 0.3})`;
+                ctx.stroke();
+            }
+
+        } else if (params.style === 'aurora') {
+            ctx.fillStyle = grad;
+            if (params.soft > 0) { 
+                ctx.shadowColor = solidColor; 
+                ctx.shadowBlur = diag * 0.2 * params.soft; 
+                ctx.globalAlpha = Math.max(0.08, 2.5 / params.waveCount); 
+            }
+            ctx.fill();
+
+        } else { 
+            ctx.fillStyle = grad;
+            if (params.soft > 0) { 
+                ctx.shadowColor = solidColor; 
+                ctx.shadowBlur = diag * 0.15 * params.soft; 
+                ctx.shadowOffsetY = 0; 
+            }
+            ctx.fill();
         }
 
-        ctx.fillStyle = grad; ctx.fill(); ctx.restore();
+        ctx.restore();
+        if (timeOffset === 0 && i % 8 === 0) await new Promise(r => setTimeout(r, 0));
+    }
+    
+    // ... (Phần thêm noise hạt bên dưới giữ nguyên)
         if (timeOffset === 0 && i % 8 === 0) await new Promise(r => setTimeout(r, 0));
     }
     
