@@ -144,35 +144,31 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
                 const bx1 = x1, by1 = diag;
                 const bx2 = x2, by2 = diag;
                 const randSeed = Math.abs(Math.sin(i * 13.37 + j * 37.11 + (p1.phase || 0)));
-                const facetMode = Math.floor(randSeed * 4) + 1;
+                const availableModes = [1, 3, 4];
+                const facetMode = availableModes[Math.floor(randSeed * availableModes.length)];
 
                 if (facetMode === 1) {
-                    ctx.beginPath();
-                    ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(bx2, by2); ctx.lineTo(bx1, by1);
-                    ctx.closePath();
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-                    ctx.fill();
-
-                } else if (facetMode === 2) {
-                    drawFacet(x1, y1, x2, y2, bx2, by2, 'rgba(255, 255, 255, 0.10)');
-                    drawFacet(x1, y1, bx2, by2, bx1, by1, 'rgba(0, 0, 0, 0.12)');
+                ctx.beginPath();
+                ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(bx2, by2); ctx.lineTo(bx1, by1);
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+                ctx.fill();
 
                 } else if (facetMode === 3) {
-                    const cx = x1 + (x2 - x1) * 0.35;
-                    const cy = Math.max(y1, y2) + (diag - Math.max(y1, y2)) * 0.2;
-                    drawFacet(x1, y1, x2, y2, cx, cy, 'rgba(255, 255, 255, 0.14)');
-                    drawFacet(x1, y1, cx, cy, bx1, by1, 'rgba(0, 0, 0, 0.08)');
-                    drawFacet(x2, y2, bx2, by2, cx, cy, 'rgba(0, 0, 0, 0.16)');
+                const cx = x1 + (x2 - x1) * 0.35;
+                const cy = Math.max(y1, y2) + (diag - Math.max(y1, y2)) * 0.2;
+                drawFacet(x1, y1, x2, y2, cx, cy, 'rgba(255, 255, 255, 0.14)');
+                drawFacet(x1, y1, cx, cy, bx1, by1, 'rgba(0, 0, 0, 0.08)');
+                drawFacet(x2, y2, bx2, by2, cx, cy, 'rgba(0, 0, 0, 0.16)');
 
-                } else {
-                    const cx = (x1 + x2) / 2;
-                    const cy = Math.max(y1, y2) + (diag - Math.max(y1, y2)) * 0.28;
-                    drawFacet(x1, y1, x2, y2, cx, cy, 'rgba(255, 255, 255, 0.12)');
-                    drawFacet(x1, y1, cx, cy, bx1, by1, 'rgba(0, 0, 0, 0.07)');
-                    drawFacet(x2, y2, bx2, by2, cx, cy, 'rgba(0, 0, 0, 0.15)');
-                    drawFacet(bx1, by1, bx2, by2, cx, cy, 'rgba(0, 0, 0, 0.04)');
+                } else if (facetMode === 4) {
+                const cx = (x1 + x2) / 2;
+                const cy = Math.max(y1, y2) + (diag - Math.max(y1, y2)) * 0.28;
+                drawFacet(x1, y1, x2, y2, cx, cy, 'rgba(255, 255, 255, 0.12)');
+                drawFacet(x1, y1, cx, cy, bx1, by1, 'rgba(0, 0, 0, 0.07)');
+                drawFacet(x2, y2, bx2, by2, cx, cy, 'rgba(0, 0, 0, 0.15)');
+                drawFacet(bx1, by1, bx2, by2, cx, cy, 'rgba(0, 0, 0, 0.04)');
                 }
-
                 ctx.beginPath();
                 ctx.moveTo(x1, y1);
                 ctx.lineTo(x2, y2);
