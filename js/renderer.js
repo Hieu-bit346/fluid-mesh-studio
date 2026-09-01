@@ -115,44 +115,57 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
             
             ctx.fillStyle = polyGrad;
             ctx.fill();
+
             ctx.save();
-            ctx.beginPath();
-            const polyPts = [];
-            for (let j = 0; j <= 6; j++) {
-                polyPts.push({
-                    x: layer.pts[j].x,
-                    y: layer.pts[j].y + Math.sin(timeOffset + layer.pts[j].phase) * 35
-                });
-            }
+            for (let j = 0; j < 6; j++) {
+                const p1 = layer.pts[j];
+                const p2 = layer.pts[j + 1];
             
-            const anchorX = diag * 0.5;
-            const anchorY = diag;
+                const x1 = p1.x;
+                const y1 = p1.y + Math.sin(timeOffset + p1.phase) * 35;
+                const x2 = p2.x;
+                const y2 = p2.y + Math.sin(timeOffset + p2.phase) * 35;
+                
+                const bx1 = x1, by1 = diag;
+                const bx2 = x2, by2 = diag;
 
-            for (let j = 0; j < polyPts.length; j++) {
-                ctx.moveTo(polyPts[j].x, polyPts[j].y);
-                ctx.lineTo(anchorX, anchorY);
-
-                if (j < polyPts.length - 2) {
-                    ctx.moveTo(polyPts[j].x, polyPts[j].y);
-                    ctx.lineTo(polyPts[j + 2].x, polyPts[j + 2].y);
+                ctx.beginPath();
+                if (j % 2 === 0) {
+                    ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(bx2, by2);
+                } else {
+                    ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(bx1, by1);
                 }
-            }
-            ctx.lineWidth = params.soft > 0 ? 1.0 + params.soft * 1.2 : 0.8;
-            const alpha = params.soft > 0 ? 0.35 + params.soft * 0.55 : 0.18;
-            ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+                ctx.fill();
 
-            if (params.soft > 0) {
-                ctx.shadowColor = solidColor;
-                ctx.shadowBlur = diag * 0.03 * params.soft;
+                ctx.beginPath();
+                if (j % 2 === 0) {
+                    ctx.moveTo(x1, y1); ctx.lineTo(bx2, by2); ctx.lineTo(bx1, by1);
+                } else {
+                    ctx.moveTo(x2, y2); ctx.lineTo(bx2, by2); ctx.lineTo(bx1, by1);
+                }
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.09)';
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.lineWidth = params.soft > 0 ? 1.5 + params.soft : 1;
+                ctx.strokeStyle = params.soft > 0 
+                    ? `rgba(255, 255, 255, ${0.4 + params.soft * 0.4})` 
+                    : 'rgba(255, 255, 255, 0.15)';
+                
+                if (params.soft > 0) {
+                    ctx.shadowColor = `rgb(${layer.color.join(',')})`;
+                    ctx.shadowBlur = diag * 0.04 * params.soft;
+                } else {
+                    ctx.shadowBlur = 0;
+                }
+                ctx.stroke();
             }
-            ctx.stroke();
             ctx.restore();
-            
-        if (params.soft > 0) {
-            ctx.shadowColor = `rgb(${layer.color.join(',')})`;
-            ctx.shadowBlur = diag * 0.04 * params.soft;
-            }
-            ctx.stroke();
 
         // AURORA
         } else if (params.style === 'aurora') {
