@@ -112,13 +112,23 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
             const polyGrad = ctx.createLinearGradient(0, layer.yOffset, diag * 0.5, layer.yOffset + diag * 0.3);
             polyGrad.addColorStop(0, `rgb(${layer.color.join(',')})`);
             polyGrad.addColorStop(1, `rgb(${layer.nextColor.join(',')})`);
-            
-            ctx.fillStyle = polyGrad;
-            ctx.fill();
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = params.soft > 0 
-                ? `rgba(255, 255, 255, ${0.2 + params.soft * 0.5})` 
-                : 'rgba(255, 255, 255, 0.15)'; 
+    
+                ctx.fillStyle = polyGrad;
+                ctx.fill();
+
+            const strokeGrad = ctx.createLinearGradient(0, layer.yOffset, diag, layer.yOffset);
+            strokeGrad.addColorStop(0, `rgba(${layer.color.join(',')}, ${0.4 + params.soft * 0.6})`);
+            strokeGrad.addColorStop(0.5, `rgba(255, 255, 255, ${0.3 + params.soft * 0.7})`);
+            strokeGrad.addColorStop(1, `rgba(${layer.nextColor.join(',')}, ${0.2 + params.soft * 0.5})`);
+
+                ctx.lineWidth = params.soft > 0 ? 1.5 + params.soft * 1.5 : 1;
+                ctx.strokeStyle = strokeGrad;
+    
+        // Nếu shadow > 0: Cho chính đường viền này phát sáng Neon (Glow Line)
+        if (params.soft > 0) {
+            ctx.shadowColor = `rgb(${layer.color.join(',')})`;
+            ctx.shadowBlur = diag * 0.04 * params.soft;
+            }
             ctx.stroke();
 
         // AURORA
