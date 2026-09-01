@@ -192,7 +192,7 @@ async function generateProcess(){
     $('paletteBox').innerHTML = paletteHTML; $('paletteBox').classList.remove('hidden');
 
     $('resultCard').classList.remove('hidden');
-    setTimeout(() => $('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    //setTimeout(() => $('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
     
     currentOutput = { name: inputName || `Obj ${comparison.length+1}`, thumb: metricC.toDataURL('image/jpeg', 0.8), avatar: avatarFullUrl, params: params, metrics: m, w: targetW, h: targetH, hexColors: uniqueHex };
     
