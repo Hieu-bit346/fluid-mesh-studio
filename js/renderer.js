@@ -281,6 +281,7 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
                 }
             }
             ctx.restore();
+            }
         
         ctx.restore();
         if (timeOffset === 0 && i % 8 === 0) await new Promise(r => setTimeout(r, 0));
