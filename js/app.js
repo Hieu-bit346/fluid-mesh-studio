@@ -98,6 +98,9 @@ async function generateProcess(){
     $('customAngle').classList.remove('error-border'); $('customRatioBox').style.boxShadow = ''; $('customSize').classList.remove('error-border');
     
     const styleMode=$('styleMode').value, angleMode=$('angleMode').value;
+    $('styleMode').addEventListener('change', (e) => {
+    $('polyModeBox').classList.toggle('hidden', e.target.value !== 'polygon');
+});
     let bAngle = 'random';
     if(angleMode === 'custom') {
         const val = parseInt($('customAngle').value);
@@ -176,7 +179,8 @@ async function generateProcess(){
         layers.push({ angle, yOffset, pts, color: palette[i], nextColor: palette[(i+1)%palette.length], baseColor: palette[i], baseNextColor: palette[(i+1)%palette.length] });
     }
 
-    const params = { seed: rngSeed, palette, waveCount, style: styleMode, baseAngle: bAngle, soft: +$('soft').value / 100, grain: +$('grain').value / 100, avgBg, layers, basePalette: palette, baseAvgBg: avgBg, baseLayers: layers };
+   const polyModeOpt = $('polyMode') ? $('polyMode').value : 'flat';
+    const params = { seed: rngSeed, palette, waveCount, style: styleMode, polyMode: polyModeOpt, baseAngle: bAngle, soft: +$('soft').value / 100, grain: +$('grain').value / 100, avgBg, layers, basePalette: palette, baseAvgBg: avgBg, baseLayers: layers };
 
     await renderCanvas(params, out, targetW, targetH, 0);
 
