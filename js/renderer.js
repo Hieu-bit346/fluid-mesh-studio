@@ -197,22 +197,21 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
             ctx.fill();
 
         // MESH GLOW (Fluid)
-        } else { 
+        } else if (params.style === 'fluid') {
             ctx.fillStyle = grad;
             ctx.globalAlpha = 0.85;
-            if (params.soft > 0) { 
-                ctx.shadowColor = solidColor; 
-                ctx.shadowBlur = diag * 0.18 * params.soft; 
-                ctx.shadowOffsetY = 0; 
+            if (params.soft > 0) {
+                ctx.shadowColor = solidColor;
+                ctx.shadowBlur = diag * 0.18 * params.soft;
+                ctx.shadowOffsetY = 0;
             }
             ctx.fill();
-        }
+
         // CRYSTAL MOSAIC
         } else if (params.style === 'crystal') {
-            
-
             let localSeed = params.seed + i;
             const rand = () => { localSeed = (localSeed * 16807) % 2147483647; return (localSeed - 1) / 2147483646; };
+
             const cols = Math.max(4, Math.floor(params.waveCount * 0.45)); 
             const rows = Math.max(4, Math.floor(cols * (h / w)));
             const cellW = w / cols;
@@ -251,6 +250,7 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
                         ctx.lineTo(tb.x, tb.y);
                         ctx.lineTo(tc.x, tc.y);
                         ctx.closePath();
+
                         const color = params.palette[Math.floor(rand() * params.palette.length)];
                         const lightOffset = (rand() - 0.5) * 0.3; 
                         const rc = Math.min(255, Math.max(0, color[0] * (1 + lightOffset)));
@@ -270,6 +270,7 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
                             ctx.stroke();
                         }
                     };
+
                     if (rand() > 0.5) {
                         drawTri(p1, p2, p4);
                         drawTri(p1, p4, p3);
@@ -280,7 +281,6 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
                 }
             }
             ctx.restore();
-        }
         
         ctx.restore();
         if (timeOffset === 0 && i % 8 === 0) await new Promise(r => setTimeout(r, 0));
