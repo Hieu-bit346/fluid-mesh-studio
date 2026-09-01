@@ -109,22 +109,45 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
 
         // POLYGON
         } else if (params.style === 'polygon') {
-            const polyGrad = ctx.createLinearGradient(0, layer.yOffset, diag * 0.5, layer.yOffset + diag * 0.3);
+            const polyGrad = ctx.createLinearGradient(0, layer.yOffset, diag * 0.6, layer.yOffset + diag * 0.4);
             polyGrad.addColorStop(0, `rgb(${layer.color.join(',')})`);
             polyGrad.addColorStop(1, `rgb(${layer.nextColor.join(',')})`);
-    
-                ctx.fillStyle = polyGrad;
-                ctx.fill();
+            
+            ctx.fillStyle = polyGrad;
+            ctx.fill();
+            ctx.save();
+            ctx.beginPath();
+            const polyPts = [];
+            for (let j = 0; j <= 6; j++) {
+                polyPts.push({
+                    x: layer.pts[j].x,
+                    y: layer.pts[j].y + Math.sin(timeOffset + layer.pts[j].phase) * 35
+                });
+            }
+            
+            const anchorX = diag * 0.5;
+            const anchorY = diag;
 
-            const strokeGrad = ctx.createLinearGradient(0, layer.yOffset, diag, layer.yOffset);
-            strokeGrad.addColorStop(0, `rgba(${layer.color.join(',')}, ${0.4 + params.soft * 0.6})`);
-            strokeGrad.addColorStop(0.5, `rgba(255, 255, 255, ${0.3 + params.soft * 0.7})`);
-            strokeGrad.addColorStop(1, `rgba(${layer.nextColor.join(',')}, ${0.2 + params.soft * 0.5})`);
+            for (let j = 0; j < polyPts.length; j++) {
+                ctx.moveTo(polyPts[j].x, polyPts[j].y);
+                ctx.lineTo(anchorX, anchorY);
 
-                ctx.lineWidth = params.soft > 0 ? 1.5 + params.soft * 1.5 : 1;
-                ctx.strokeStyle = strokeGrad;
-    
-        // Nếu shadow > 0: Cho chính đường viền này phát sáng Neon (Glow Line)
+                if (j < polyPts.length - 2) {
+                    ctx.moveTo(polyPts[j].x, polyPts[j].y);
+                    ctx.lineTo(polyPts[j + 2].x, polyPts[j + 2].y);
+                }
+            }
+            ctx.lineWidth = params.soft > 0 ? 1.0 + params.soft * 1.2 : 0.8;
+            const alpha = params.soft > 0 ? 0.35 + params.soft * 0.55 : 0.18;
+            ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+
+            if (params.soft > 0) {
+                ctx.shadowColor = solidColor;
+                ctx.shadowBlur = diag * 0.03 * params.soft;
+            }
+            ctx.stroke();
+            ctx.restore();
+            
         if (params.soft > 0) {
             ctx.shadowColor = `rgb(${layer.color.join(',')})`;
             ctx.shadowBlur = diag * 0.04 * params.soft;
