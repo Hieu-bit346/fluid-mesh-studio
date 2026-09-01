@@ -168,9 +168,8 @@ async function generateProcess(){
     const rngSeed = Math.floor(Math.random()*1000000), rng = mulberry32(rngSeed);
     const waveCount = +$('blobs').value;
     let palette = diverse(colors, waveCount, rng);
-    if(styleMode === 'fluid' || styleMode === 'aurora' || styleMode === 'polygon') palette.sort((a,b)=>hsv(...a)[0]-hsv(...b)[0]); 
+    if(styleMode === 'fluid' || styleMode === 'aurora' || styleMode === 'polygon' || styleMode === 'crystal') palette.sort((a,b)=>hsv(...a)[0]-hsv(...b)[0]); 
     else palette.sort(() => rng() - 0.5);
-
     const avgBg = colors.reduce((acc, c)=>[acc[0]+c[0], acc[1]+c[1], acc[2]+c[2]], [0,0,0]).map(v=>Math.round(v/colors.length));
     const diag = Math.sqrt(targetW*targetW + targetH*targetH) * 1.5;
     
