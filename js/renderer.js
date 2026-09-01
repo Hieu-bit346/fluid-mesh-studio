@@ -103,7 +103,10 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
             if (params.soft > 0) { 
                 ctx.shadowColor = `rgba(15, 23, 42, ${0.4 + params.soft * 0.4})`; 
                 ctx.shadowBlur = diag * 0.015 * params.soft; 
-                ctx.shadowOffsetY = diag * 0.025 * params.soft; 
+                const shadowDist = diag * 0.025 * params.soft;
+                const angleRad = (params.paperAngle || 45) * (Math.PI / 180);
+                ctx.shadowOffsetX = shadowDist * Math.cos(angleRad);
+                ctx.shadowOffsetY = shadowDist * Math.sin(angleRad); 
             }
             ctx.fill();
 
