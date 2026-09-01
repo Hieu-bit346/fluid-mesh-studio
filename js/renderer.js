@@ -212,6 +212,9 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
             let localSeed = params.seed + i;
             const rand = () => { localSeed = (localSeed * 16807) % 2147483647; return (localSeed - 1) / 2147483646; };
 
+            const isChaotic = params.crystalMode === 'chaotic';
+            const jitterFactor = isChaotic ? 0.95 : 0.42;
+
             const cols = Math.max(4, Math.floor(params.waveCount * 0.45)); 
             const rows = Math.max(4, Math.floor(cols * (h / w)));
             const cellW = w / cols;
@@ -221,8 +224,8 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
             for (let c = 0; c <= cols + 2; c++) {
                 pts[c] = [];
                 for (let r = 0; r <= rows + 2; r++) {
-                    const jitterX = (rand() - 0.5) * cellW * 0.95;
-                    const jitterY = (rand() - 0.5) * cellH * 0.95;
+                    const jitterX = (rand() - 0.5) * cellW * jitterFactor;
+                    const jitterY = (rand() - 0.5) * cellH * jitterFactor;
                     
                     let px = (c - 1) * cellW + jitterX;
                     let py = (r - 1) * cellH + jitterY;
@@ -251,24 +254,33 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
                         ctx.lineTo(tc.x, tc.y);
                         ctx.closePath();
 
-                        const color = params.palette[Math.floor(rand() * params.palette.length)];
-                        const lightOffset = (rand() - 0.5) * 0.3; 
+                        let color;
+                        if (isChaotic) {
+                            // Chaos
+                            color = params.palette[Math.floor(rand() * params.palette.length)];
+                        } else {
+                            // Clean
+                            const triCx = (ta.x + tb.x + tc.x) / (3 * w);
+                            const triCy = (ta.y + tb.y + tc.y) / (3 * h);
+                            const tNorm = Math.min(0.99, Math.max(0, (triCx + triCy) / 2));
+                            const palIdx = Math.floor(tNorm * params.palette.length);
+                            color = params.palette[palIdx];
+                        }
+                        
+                        // Light and dark deviation (Light harmonic deviation 12%, Strong chaotic deviation 30%)
+                        const spread = isChaotic ? 0.3 : 0.12;
+                        const lightOffset = (rand() - 0.5) * spread; 
                         const rc = Math.min(255, Math.max(0, color[0] * (1 + lightOffset)));
                         const gc = Math.min(255, Math.max(0, color[1] * (1 + lightOffset)));
                         const bc = Math.min(255, Math.max(0, color[2] * (1 + lightOffset)));
                         
-                        ctx.fillStyle = `rgb(${rc},${gc},${bc})`;
+                        const fillStyle = `rgb(${rc},${gc},${bc})`;
+                        ctx.fillStyle = fillStyle;
                         ctx.fill();
 
-                        if (params.soft > 0) {
-                            ctx.lineWidth = 0.5 + params.soft * 1.5;
-                            ctx.strokeStyle = `rgba(255,255,255,${0.15 + params.soft * 0.4})`;
-                            ctx.stroke();
-                        } else {
-                            ctx.lineWidth = 1;
-                            ctx.strokeStyle = ctx.fillStyle;
-                            ctx.stroke();
-                        }
+                        ctx.lineWidth = 1;
+                        ctx.strokeStyle = fillStyle;
+                        ctx.stroke();
                     };
 
                     if (rand() > 0.5) {
@@ -281,7 +293,7 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
                 }
             }
             ctx.restore();
-            }
+        }
         
         ctx.restore();
         if (timeOffset === 0 && i % 8 === 0) await new Promise(r => setTimeout(r, 0));
