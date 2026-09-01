@@ -96,41 +96,53 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
         ctx.globalAlpha = 1.0;
         
         const solidColor = `rgb(${layer.color.join(',')})`;
-
+        
+        // PAPER CUT
         if (params.style === 'paper') {
             ctx.fillStyle = solidColor; 
             if (params.soft > 0) { 
-                ctx.shadowColor = `rgba(15, 23, 42, ${0.45 + params.soft*0.2})`; 
-                ctx.shadowBlur = diag * 0.01 * params.soft; 
-                ctx.shadowOffsetY = diag * 0.02 * params.soft; 
+                ctx.shadowColor = `rgba(15, 23, 42, ${0.4 + params.soft * 0.4})`; 
+                ctx.shadowBlur = diag * 0.015 * params.soft; 
+                ctx.shadowOffsetY = diag * 0.025 * params.soft; 
             }
             ctx.fill();
+
+        // POLYGON
         } else if (params.style === 'polygon') {
-            ctx.fillStyle = grad; 
-            ctx.fill(); 
-            if (params.soft > 0) {
-                ctx.lineWidth = 1.5;
-                ctx.strokeStyle = `rgba(255, 255, 255, ${params.soft * 0.3})`;
-                ctx.stroke();
-            }
+            const polyGrad = ctx.createLinearGradient(0, layer.yOffset, diag * 0.5, layer.yOffset + diag * 0.3);
+            polyGrad.addColorStop(0, `rgb(${layer.color.join(',')})`);
+            polyGrad.addColorStop(1, `rgb(${layer.nextColor.join(',')})`);
+            
+            ctx.fillStyle = polyGrad;
+            ctx.fill();
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = params.soft > 0 
+                ? `rgba(255, 255, 255, ${0.2 + params.soft * 0.5})` 
+                : 'rgba(255, 255, 255, 0.15)'; 
+            ctx.stroke();
+
+        // AURORA
         } else if (params.style === 'aurora') {
             ctx.fillStyle = grad;
+            ctx.globalAlpha = Math.max(0.1, 2.0 / params.waveCount);
             if (params.soft > 0) { 
                 ctx.shadowColor = solidColor; 
-                ctx.shadowBlur = diag * 0.2 * params.soft; 
-                ctx.globalAlpha = Math.max(0.08, 2.5 / params.waveCount); 
+                ctx.shadowBlur = diag * 0.25 * params.soft; 
             }
             ctx.fill();
+
+        // 4. MESH GLOW (Fluid)
         } else { 
             ctx.fillStyle = grad;
+            ctx.globalAlpha = 0.85;
             if (params.soft > 0) { 
                 ctx.shadowColor = solidColor; 
-                ctx.shadowBlur = diag * 0.15 * params.soft; 
+                ctx.shadowBlur = diag * 0.18 * params.soft; 
                 ctx.shadowOffsetY = 0; 
             }
             ctx.fill();
         }
-
+        
         ctx.restore();
         if (timeOffset === 0 && i % 8 === 0) await new Promise(r => setTimeout(r, 0));
     }
