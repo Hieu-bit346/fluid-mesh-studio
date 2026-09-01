@@ -108,65 +108,86 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
             ctx.fill();
 
         // POLYGON
-        } else if (params.style === 'polygon') {
+      } else if (params.style === 'polygon') {
             const polyGrad = ctx.createLinearGradient(0, layer.yOffset, diag * 0.6, layer.yOffset + diag * 0.4);
             polyGrad.addColorStop(0, `rgb(${layer.color.join(',')})`);
             polyGrad.addColorStop(1, `rgb(${layer.nextColor.join(',')})`);
-            
             ctx.fillStyle = polyGrad;
             ctx.fill();
 
             ctx.save();
+            const darkR = Math.floor(layer.color[0] * 0.35);
+            const darkG = Math.floor(layer.color[1] * 0.35);
+            const darkB = Math.floor(layer.color[2] * 0.35);
+            const strokeAlpha = params.soft > 0 ? 0.45 + params.soft * 0.45 : 0.22;
+            const darkerStrokeColor = `rgba(${darkR}, ${darkG}, ${darkB}, ${strokeAlpha})`;
+            const drawFacet = (tx1, ty1, tx2, ty2, tx3, ty3, fillStyle) => {
+                ctx.beginPath();
+                ctx.moveTo(tx1, ty1); ctx.lineTo(tx2, ty2); ctx.lineTo(tx3, ty3);
+                ctx.closePath();
+                ctx.fillStyle = fillStyle;
+                ctx.fill();
+                ctx.lineWidth = params.soft > 0 ? 0.9 + params.soft * 0.8 : 0.7;
+                ctx.strokeStyle = darkerStrokeColor;
+                ctx.stroke();
+            };
+
             for (let j = 0; j < 6; j++) {
                 const p1 = layer.pts[j];
                 const p2 = layer.pts[j + 1];
-            
+
                 const x1 = p1.x;
                 const y1 = p1.y + Math.sin(timeOffset + p1.phase) * 35;
                 const x2 = p2.x;
                 const y2 = p2.y + Math.sin(timeOffset + p2.phase) * 35;
-                
+
                 const bx1 = x1, by1 = diag;
                 const bx2 = x2, by2 = diag;
+                const randSeed = Math.abs(Math.sin(i * 13.37 + j * 37.11 + (p1.phase || 0)));
+                const facetMode = Math.floor(randSeed * 4) + 1;
 
-                ctx.beginPath();
-                if (j % 2 === 0) {
-                    ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(bx2, by2);
-                } else {
-                    ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(bx1, by1);
-                }
-                ctx.closePath();
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-                ctx.fill();
+                if (facetMode === 1) {
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.lineTo(bx2, by2); ctx.lineTo(bx1, by1);
+                    ctx.closePath();
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+                    ctx.fill();
 
-                ctx.beginPath();
-                if (j % 2 === 0) {
-                    ctx.moveTo(x1, y1); ctx.lineTo(bx2, by2); ctx.lineTo(bx1, by1);
+                } else if (facetMode === 2) {
+                    drawFacet(x1, y1, x2, y2, bx2, by2, 'rgba(255, 255, 255, 0.10)');
+                    drawFacet(x1, y1, bx2, by2, bx1, by1, 'rgba(0, 0, 0, 0.12)');
+
+                } else if (facetMode === 3) {
+                    const cx = x1 + (x2 - x1) * 0.35;
+                    const cy = Math.max(y1, y2) + (diag - Math.max(y1, y2)) * 0.2;
+                    drawFacet(x1, y1, x2, y2, cx, cy, 'rgba(255, 255, 255, 0.14)');
+                    drawFacet(x1, y1, cx, cy, bx1, by1, 'rgba(0, 0, 0, 0.08)');
+                    drawFacet(x2, y2, bx2, by2, cx, cy, 'rgba(0, 0, 0, 0.16)');
+
                 } else {
-                    ctx.moveTo(x2, y2); ctx.lineTo(bx2, by2); ctx.lineTo(bx1, by1);
+                    const cx = (x1 + x2) / 2;
+                    const cy = Math.max(y1, y2) + (diag - Math.max(y1, y2)) * 0.28;
+                    drawFacet(x1, y1, x2, y2, cx, cy, 'rgba(255, 255, 255, 0.12)');
+                    drawFacet(x1, y1, cx, cy, bx1, by1, 'rgba(0, 0, 0, 0.07)');
+                    drawFacet(x2, y2, bx2, by2, cx, cy, 'rgba(0, 0, 0, 0.15)');
+                    drawFacet(bx1, by1, bx2, by2, cx, cy, 'rgba(0, 0, 0, 0.04)');
                 }
-                ctx.closePath();
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.09)';
-                ctx.fill();
 
                 ctx.beginPath();
                 ctx.moveTo(x1, y1);
                 ctx.lineTo(x2, y2);
-                ctx.lineWidth = params.soft > 0 ? 1.5 + params.soft : 1;
-                ctx.strokeStyle = params.soft > 0 
-                    ? `rgba(255, 255, 255, ${0.4 + params.soft * 0.4})` 
-                    : 'rgba(255, 255, 255, 0.15)';
-                
+                ctx.lineWidth = params.soft > 0 ? 1.8 + params.soft * 1.2 : 1.2;
+                ctx.strokeStyle = `rgba(${darkR}, ${darkG}, ${darkB}, ${strokeAlpha + 0.35})`;
                 if (params.soft > 0) {
-                    ctx.shadowColor = `rgb(${layer.color.join(',')})`;
-                    ctx.shadowBlur = diag * 0.04 * params.soft;
+                    ctx.shadowColor = `rgb(${darkR}, ${darkG}, ${darkB})`;
+                    ctx.shadowBlur = diag * 0.02 * params.soft;
                 } else {
                     ctx.shadowBlur = 0;
                 }
                 ctx.stroke();
             }
             ctx.restore();
-
+            
         // AURORA
         } else if (params.style === 'aurora') {
             ctx.fillStyle = grad;
