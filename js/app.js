@@ -183,8 +183,9 @@ async function generateProcess(){
     }
 
    const polyModeOpt = $('polyMode') ? $('polyMode').value : 'flat';
+    const pAngleOpt = $('paperAngle') ? +$('paperAngle').value : 45;
     const params = { seed: rngSeed, palette, waveCount, style: styleMode, polyMode: polyModeOpt, paperAngle: pAngleOpt, baseAngle: bAngle, soft: +$('soft').value / 100, grain: +$('grain').value / 100, avgBg, layers, basePalette: palette, baseAvgBg: avgBg, baseLayers: layers };
-
+    
     await renderCanvas(params, out, targetW, targetH, 0);
 
     const metricC = document.createElement('canvas'); metricC.width = 256; metricC.height = 256;
