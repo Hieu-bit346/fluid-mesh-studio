@@ -79,8 +79,7 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
             grad.addColorStop(0, `rgb(${layer.color.join(',')})`); 
             grad.addColorStop(1, `rgb(${layer.nextColor.join(',')})`);
         }
-
-        // Reset các giá trị bóng và alpha để tránh lỗi tràn từ vòng lặp trước
+        
         ctx.shadowBlur = 0;
         ctx.shadowOffsetY = 0;
         ctx.shadowColor = 'transparent';
@@ -128,8 +127,6 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
         ctx.restore();
         if (timeOffset === 0 && i % 8 === 0) await new Promise(r => setTimeout(r, 0));
     }
-    
-    // ... (Phần thêm noise hạt bên dưới giữ nguyên)
         if (timeOffset === 0 && i % 8 === 0) await new Promise(r => setTimeout(r, 0));
     }
     
