@@ -30,6 +30,11 @@
       <option value="manual" style="font-weight:bold; color:var(--accent)" id="t_c_manual">🎯 Manual Crop Tool</option>
   </select></label>
   <label><span id="t_style">Render Style</span><select id="styleMode">
+  <label id="polyModeBox" class="hidden"><span id="t_poly_mode">Polygon Mode</span><select id="polyMode">
+    <option value="flat" id="t_p_flat">Flat Geo (0 Triangles)</option>
+    <option value="hybrid" id="t_p_hybrid">Hybrid (0-1 Random)</option>
+    <option value="faceted" id="t_p_faceted">Faceted (Full 3D)</option>
+  </select></label>
     <option value="fluid" id="t_s_fluid">Mesh Glow (Smooth Blend)</option>
     <option value="paper" id="t_s_paper">Paper Cut (Hard Shadows)</option>
     <option value="aurora" id="t_s_aurora">Aurora (Screen Layers)</option>
