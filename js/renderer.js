@@ -109,12 +109,18 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
 
         // POLYGON
         } else if (params.style === 'polygon') {
+            // HIỆU ỨNG THẤU QUANG: Nếu có tam giác thì làm trong suốt nhẹ để lộ lớp dưới, Flat thì đục 100%
+            if (params.polyMode !== 'flat') {
+                ctx.globalAlpha = 0.88; 
+            }
+
             const polyGrad = ctx.createLinearGradient(0, layer.yOffset, diag * 0.6, layer.yOffset + diag * 0.4);
             polyGrad.addColorStop(0, `rgb(${layer.color.join(',')})`);
             polyGrad.addColorStop(1, `rgb(${layer.nextColor.join(',')})`);
             
             ctx.fillStyle = polyGrad;
             ctx.fill();
+
             ctx.save();
             for (let j = 0; j < 6; j++) {
                 const p1 = layer.pts[j];
@@ -124,31 +130,18 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
                 const y1 = p1.y + Math.sin(timeOffset + p1.phase) * 35;
                 const x2 = p2.x;
                 const y2 = p2.y + Math.sin(timeOffset + p2.phase) * 35;
-                const hasTriangle = Math.abs(Math.sin(i * 19.17 + j * 11.31 + (p1.phase || 0))) > 0.45;
+                let hasTriangle = false;
+                if (params.polyMode === 'hybrid') {
+                    hasTriangle = Math.abs(Math.sin(i * 19.17 + j * 11.31 + (p1.phase || 0))) > 0.45;
+                } else if (params.polyMode === 'faceted') {
+                    hasTriangle = true;
+                }
 
                 if (hasTriangle) {
                     const midX = (x1 + x2) / 2;
                     const midY = (y1 + y2) / 2;
                     const peakX = midX + (y2 - y1) * 0.35;
                     const peakY = midY - (x2 - x1) * 0.35;
-                    ctx.beginPath();
-                    ctx.moveTo(x1, y1);
-                    ctx.lineTo(peakX, peakY);
-                    ctx.lineTo(midX, midY);
-                    ctx.closePath();
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.10)';
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.moveTo(x2, y2);
-                    ctx.lineTo(peakX, peakY);
-                    ctx.lineTo(midX, midY);
-                    ctx.closePath();
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.moveTo(x1, y1);
-                    ctx.lineTo(peakX, peakY);
-                    ctx.lineTo(x2, y2);
                 } else {
                     ctx.beginPath();
                     ctx.moveTo(x1, y1);
