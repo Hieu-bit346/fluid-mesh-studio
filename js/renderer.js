@@ -196,7 +196,7 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
             }
             ctx.fill();
 
-        // 4. MESH GLOW (Fluid)
+        // MESH GLOW (Fluid)
         } else { 
             ctx.fillStyle = grad;
             ctx.globalAlpha = 0.85;
@@ -206,6 +206,80 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
                 ctx.shadowOffsetY = 0; 
             }
             ctx.fill();
+        }
+        // CRYSTAL MOSAIC
+        } else if (params.style === 'crystal') {
+            
+
+            let localSeed = params.seed + i;
+            const rand = () => { localSeed = (localSeed * 16807) % 2147483647; return (localSeed - 1) / 2147483646; };
+            const cols = Math.max(4, Math.floor(params.waveCount * 0.45)); 
+            const rows = Math.max(4, Math.floor(cols * (h / w)));
+            const cellW = w / cols;
+            const cellH = h / rows;
+            
+            let pts = [];
+            for (let c = 0; c <= cols + 2; c++) {
+                pts[c] = [];
+                for (let r = 0; r <= rows + 2; r++) {
+                    const jitterX = (rand() - 0.5) * cellW * 0.95;
+                    const jitterY = (rand() - 0.5) * cellH * 0.95;
+                    
+                    let px = (c - 1) * cellW + jitterX;
+                    let py = (r - 1) * cellH + jitterY;
+                    
+                    px += Math.sin(timeOffset + c * 0.5) * (15 * (params.soft > 0 ? 1 : 0.2));
+                    py += Math.cos(timeOffset + r * 0.5) * (15 * (params.soft > 0 ? 1 : 0.2));
+                    
+                    pts[c][r] = { x: px, y: py };
+                }
+            }
+
+            ctx.save();
+            ctx.translate(-w/2 + diag/2, -h/2 + diag/2); 
+
+            for (let c = 0; c < cols + 1; c++) {
+                for (let r = 0; r < rows + 1; r++) {
+                    const p1 = pts[c][r];
+                    const p2 = pts[c+1][r];
+                    const p3 = pts[c][r+1];
+                    const p4 = pts[c+1][r+1];
+
+                    const drawTri = (ta, tb, tc) => {
+                        ctx.beginPath();
+                        ctx.moveTo(ta.x, ta.y);
+                        ctx.lineTo(tb.x, tb.y);
+                        ctx.lineTo(tc.x, tc.y);
+                        ctx.closePath();
+                        const color = params.palette[Math.floor(rand() * params.palette.length)];
+                        const lightOffset = (rand() - 0.5) * 0.3; 
+                        const rc = Math.min(255, Math.max(0, color[0] * (1 + lightOffset)));
+                        const gc = Math.min(255, Math.max(0, color[1] * (1 + lightOffset)));
+                        const bc = Math.min(255, Math.max(0, color[2] * (1 + lightOffset)));
+                        
+                        ctx.fillStyle = `rgb(${rc},${gc},${bc})`;
+                        ctx.fill();
+
+                        if (params.soft > 0) {
+                            ctx.lineWidth = 0.5 + params.soft * 1.5;
+                            ctx.strokeStyle = `rgba(255,255,255,${0.15 + params.soft * 0.4})`;
+                            ctx.stroke();
+                        } else {
+                            ctx.lineWidth = 1;
+                            ctx.strokeStyle = ctx.fillStyle;
+                            ctx.stroke();
+                        }
+                    };
+                    if (rand() > 0.5) {
+                        drawTri(p1, p2, p4);
+                        drawTri(p1, p4, p3);
+                    } else {
+                        drawTri(p1, p2, p3);
+                        drawTri(p2, p4, p3);
+                    }
+                }
+            }
+            ctx.restore();
         }
         
         ctx.restore();
