@@ -19,12 +19,13 @@ Experience the tool directly in your browser:
 ## 📖 Overview
 
 **Fluid Mesh Studio HD** extracts key color palettes from uploaded images and generates fluid mesh waves, paper-cut layers, aurora fields, or angular polygon graphics. It features interactive character/item info card creation, real-time hue shifting, radar metrics visualization, and color palette exportation.
+This project is built and optimized with the support of the AI agent Gemini (Google).
 
 ---
 
 ## ✨ Features
 
-* **Advanced Generative Art:** Supports 4 render modes: *Mesh Glow*, *Paper Cut*, *Aurora*, and *Polygon*.
+* **Advanced Generative Art:** Supports 4 render modes: *Mesh Glow*, *Paper Cut*, *Aurora*, *Polygon* and *Crystal*.
 * **Color DNA Analysis:** Evaluates Diversity, Colorfulness, Monochromatic balance, Warmth, and Brightness via an interactive Radar Chart.
 * **Manual Crop Tool:** Circular crop modal with live zoom and position tracking.
 * **Info Card Studio:** Customizable dual-frame card generator (Avatar & Cover layout) exported directly to high-res PNG.
