@@ -22,7 +22,7 @@ $('ratio').addEventListener('change', (e) => { $('customRatioBox').classList.tog
 
 const input=$('files'), drop=$('drop'), preview=$('preview'), status=$('status'), out=$('out'), outCtx=out.getContext('2d');
 drop.onclick=()=>input.click(); input.onchange=e=>addFiles([...e.target.files]);
-['dragenter','dragover'].forEach(t=>drop.(t,e=>{e.preventDefault();drop.classList.add('drag')});
+['dragenter','dragover'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add('drag')}));
 ['dragleave','drop'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove('drag')}));
 drop.addEventListener('drop',e=>addFiles([...e.dataTransfer.files]));
 
