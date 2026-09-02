@@ -13,9 +13,20 @@ function setLang(l) {
 $('langBtn').onclick = () => setLang(currentLang === 'en' ? 'vi' : 'en');
 
 [['blobs','blobVal',''],['soft','softVal','%'],['sat','satVal','%'],['grain','grainVal','%']].forEach(([a,b,s])=>$(a).addEventListener('input',()=>$(b).textContent=$(a).value+s));
+
 if ($('paperAngle')) {
     $('paperAngle').addEventListener('input', () => $('paperAngleVal').textContent = $('paperAngle').value + '°');
 }
+
+if ($('styleMode')) {
+    $('styleMode').addEventListener('change', (e) => {
+        if ($('polyModeBox')) $('polyModeBox').classList.toggle('hidden', e.target.value !== 'polygon');
+        if ($('paperAngleBox')) $('paperAngleBox').classList.toggle('hidden', e.target.value !== 'paper');
+        if ($('crystalModeBox')) $('crystalModeBox').classList.toggle('hidden', e.target.value !== 'crystal');
+        if ($('auroraModeBox')) $('auroraModeBox').classList.toggle('hidden', e.target.value !== 'aurora');
+    });
+}
+
 $('size').addEventListener('change', (e) => { $('customSize').classList.toggle('hidden', e.target.value !== 'custom'); });
 $('angleMode').addEventListener('change', (e) => { $('customAngle').classList.toggle('hidden', e.target.value !== 'custom'); });
 $('ratio').addEventListener('change', (e) => { $('customRatioBox').classList.toggle('hidden', e.target.value !== 'custom'); });
@@ -28,15 +39,15 @@ drop.addEventListener('drop',e=>addFiles([...e.dataTransfer.files]));
 
 function addFiles(arr){ files.push(...arr.filter(f=>f.type.startsWith('image/'))); cropNormList = []; renderInputPreview(); }
 function renderInputPreview() {
-  preview.innerHTML = '';
-  files.forEach((f, idx) => {
-    const wrap = document.createElement('div'); wrap.className = 'thumb-wrap';
-    const img = document.createElement('img'); img.className = 'thumb'; img.src = URL.createObjectURL(f);
-    const del = document.createElement('button'); del.className = 'thumb-del'; del.innerHTML = '✕';
-    del.onclick = (e) => { e.stopPropagation(); files.splice(idx, 1); cropNormList.splice(idx, 1); renderInputPreview(); };
-    wrap.appendChild(img); wrap.appendChild(del); preview.appendChild(wrap);
-  });
-  status.textContent = files.length ? `${files.length} images selected.` : dict[currentLang].statusEmpty;
+    preview.innerHTML = '';
+    files.forEach((f, idx) => {
+        const wrap = document.createElement('div'); wrap.className = 'thumb-wrap';
+        const img = document.createElement('img'); img.className = 'thumb'; img.src = URL.createObjectURL(f);
+        const del = document.createElement('button'); del.className = 'thumb-del'; del.innerHTML = '✕';
+        del.onclick = (e) => { e.stopPropagation(); files.splice(idx, 1); cropNormList.splice(idx, 1); renderInputPreview(); };
+        wrap.appendChild(img); wrap.appendChild(del); preview.appendChild(wrap);
+    });
+    status.textContent = files.length ? `${files.length} images selected.` : dict[currentLang].statusEmpty;
 }
 
 function copyCSS(paletteHex) {
@@ -100,12 +111,7 @@ async function generateProcess(){
     $('customAngle').classList.remove('error-border'); $('customRatioBox').style.boxShadow = ''; $('customSize').classList.remove('error-border');
     
     const styleMode=$('styleMode').value, angleMode=$('angleMode').value;
- $('styleMode').addEventListener('change', (e) => {
-    if ($('polyModeBox')) $('polyModeBox').classList.toggle('hidden', e.target.value !== 'polygon');
-    if ($('paperAngleBox')) $('paperAngleBox').classList.toggle('hidden', e.target.value !== 'paper');
-    if ($('crystalModeBox')) $('crystalModeBox').classList.toggle('hidden', e.target.value !== 'crystal');
-    if ($('auroraModeBox')) $('auroraModeBox').classList.toggle('hidden', e.target.value !== 'aurora');
-});
+    
     let bAngle = 'random';
     if(angleMode === 'custom') {
         const val = parseInt($('customAngle').value);
@@ -163,14 +169,19 @@ async function generateProcess(){
         }
     }
     
-    if(!colors.length){status.textContent='Image too dark or desaturated. Lower saturate filter.'; $('go').disabled=false;return}
+    if(!colors.length){status.textContent='Image too dark or desaturated. Lower saturate filter.'; $('go').disabled=false;return;}
     
     status.textContent=dict[currentLang].statusGen;
     const rngSeed = Math.floor(Math.random()*1000000), rng = mulberry32(rngSeed);
     const waveCount = +$('blobs').value;
     let palette = diverse(colors, waveCount, rng);
-    if(styleMode === 'fluid' || styleMode === 'aurora' || styleMode === 'polygon' || styleMode === 'crystal') palette.sort((a,b)=>hsv(...a)[0]-hsv(...b)[0]); 
-    else palette.sort(() => rng() - 0.5);
+    
+    if(styleMode === 'fluid' || styleMode === 'aurora' || styleMode === 'polygon' || styleMode === 'crystal') {
+        palette.sort((a,b)=>hsv(...a)[0]-hsv(...b)[0]); 
+    } else {
+        palette.sort(() => rng() - 0.5);
+    }
+    
     const avgBg = colors.reduce((acc, c)=>[acc[0]+c[0], acc[1]+c[1], acc[2]+c[2]], [0,0,0]).map(v=>Math.round(v/colors.length));
     const diag = Math.sqrt(targetW*targetW + targetH*targetH) * 1.5;
     
@@ -183,7 +194,7 @@ async function generateProcess(){
         layers.push({ angle, yOffset, pts, color: palette[i], nextColor: palette[(i+1)%palette.length], baseColor: palette[i], baseNextColor: palette[(i+1)%palette.length] });
     }
 
-   const polyModeOpt = $('polyMode') ? $('polyMode').value : 'flat';
+    const polyModeOpt = $('polyMode') ? $('polyMode').value : 'flat';
     const pAngleOpt = $('paperAngle') ? +$('paperAngle').value : 45;
     const crystalModeOpt = $('crystalMode') ? $('crystalMode').value : 'harmonic';
     const auroraModeOpt = $('auroraMode') ? $('auroraMode').value : 'glass';
@@ -204,7 +215,6 @@ async function generateProcess(){
     $('paletteBox').innerHTML = paletteHTML; $('paletteBox').classList.remove('hidden');
 
     $('resultCard').classList.remove('hidden');
-    //setTimeout(() => $('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
     
     currentOutput = { name: inputName || `Obj ${comparison.length+1}`, thumb: metricC.toDataURL('image/jpeg', 0.8), avatar: avatarFullUrl, params: params, metrics: m, w: targetW, h: targetH, hexColors: uniqueHex };
     
@@ -245,7 +255,7 @@ function handleMove(e) {
     if(!isDragging) return; e.preventDefault();
     const cx = e.touches ? e.touches[0].clientX : e.clientX;
     const cy = e.touches ? e.touches[0].clientY : e.clientY;
-   
+    
     if(cardTab === 'avatar') {
     const boxSize = 200;
     const avRatio = avImgEl.naturalWidth / avImgEl.naturalHeight;
@@ -418,5 +428,4 @@ $('dlAnimBtn').onclick = async () => {
 
 $('clear').onclick=()=>{ files=[]; cropNormList=[]; renderInputPreview(); $('resultCard').classList.add('hidden'); };
 
-// Finally, execute initialization
 setLang('en');
