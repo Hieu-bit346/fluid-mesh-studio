@@ -349,7 +349,7 @@ async function drawCardToCanvas() {
     const c = document.createElement('canvas'); c.width = 900; c.height = 1200; const ctx = c.getContext('2d');
     ctx.fillStyle = '#181b22'; ctx.fillRect(0,0,900,1200);
     
-    // --- 1. RENDER COVER (Hoạt động hoàn hảo, giữ nguyên) ---
+    // --- 1. RENDER COVER ---
     const snapCov = document.createElement('canvas'); snapCov.width = 252; snapCov.height = 182;
     const sCovCtx = snapCov.getContext('2d');
     sCovCtx.save();
@@ -364,20 +364,29 @@ async function drawCardToCanvas() {
     
     ctx.fillStyle = 'rgba(24,27,34,0.9)'; ctx.fillRect(0, 560, 900, 100);
     
+    // --- 2. RENDER AVATAR
     if(currentOutput.avatar) {
         const av = new Image(); av.src = currentOutput.avatar; await new Promise(r=>av.onload=r);
         
-        const avRatio = av.width / av.height;
-        const imgW = (avRatio > 1) ? 200 * avRatio : 200;
-        const imgH = (avRatio > 1) ? 200 : 200 / avRatio;
+        const snapAv = document.createElement('canvas'); 
+        snapAv.width = 200; snapAv.height = 200;
+        const sAvCtx = snapAv.getContext('2d');
         
-        const ratioX = av.width / (imgW * avScale);
-        const ratioY = av.height / (imgH * avScale);
+        let drawW = avImgEl.width; 
+        let drawH = avImgEl.height;
         
-        const sx = -avX * ratioX;
-        const sy = -avY * ratioY;
-        const sw = 200 * ratioX;
-        const sh = 200 * ratioY;
+        if (!drawW || drawW === 0) { 
+            const avRatio = av.width / av.height;
+            drawW = (avRatio > 1) ? 200 * avRatio : 200;
+            drawH = (avRatio > 1) ? 200 : 200 / avRatio;
+        }
+
+        sAvCtx.save();
+        if (av.width < 200) sAvCtx.imageSmoothingEnabled = false;
+        sAvCtx.translate(avX, avY);
+        sAvCtx.scale(avScale, avScale);
+        sAvCtx.drawImage(av, 0, 0, drawW, drawH);
+        sAvCtx.restore();
         
         ctx.save(); 
         ctx.beginPath(); 
@@ -386,14 +395,13 @@ async function drawCardToCanvas() {
         ctx.clip();
         
         if (av.width < 200) ctx.imageSmoothingEnabled = false;
-        
-        ctx.drawImage(av, sx, sy, sw, sh, 360, 470, 180, 180);
-        
+        ctx.drawImage(snapAv, 0, 0, 200, 200, 360, 470, 180, 180);
         ctx.restore();
         
         ctx.beginPath(); ctx.arc(450, 560, 90, 0, Math.PI*2); ctx.lineWidth = 6; ctx.strokeStyle = '#ff5c77'; ctx.stroke();
     }
     
+    // --- 3. RENDER TEXT & RADAR ---
     ctx.fillStyle = '#fff'; ctx.font = 'bold 38px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(currentOutput.name, 450, 695);
     ctx.fillStyle = '#a9b0bc'; ctx.font = '20px sans-serif'; ctx.fillText('Color DNA Signature', 450, 730);
     
