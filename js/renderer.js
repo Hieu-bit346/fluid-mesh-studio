@@ -262,28 +262,32 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
                     const p3 = pts[c][r+1];
                     const p4 = pts[c+1][r+1];
 
-                   let color;
+                    const drawTri = (ta, tb, tc) => {
+                        ctx.beginPath();
+                        ctx.moveTo(ta.x, ta.y);
+                        ctx.lineTo(tb.x, tb.y);
+                        ctx.lineTo(tc.x, tc.y);
+                        ctx.closePath();
+
+                        let color;
                         if (isChaotic) {
                             // Chaos
                             color = params.palette[Math.floor(rand() * params.palette.length)];
                         } else {
-                            // Cleanr
+                            // Clean
                             const triCx = (ta.x + tb.x + tc.x) / (3 * w);
                             const triCy = (ta.y + tb.y + tc.y) / (3 * h);
                             
-                            // Create a gradient axis from the top-left corner to the bottom-right corner.
                             const tNorm = Math.min(0.999, Math.max(0, (triCx + triCy) / 2));
                             
-                            // Find the two closest colors in the palette to mix.
                             const exactPos = tNorm * (params.palette.length - 1);
                             const idx1 = Math.floor(exactPos);
                             const idx2 = Math.min(idx1 + 1, params.palette.length - 1);
-                            const blend = exactPos - idx1; // Mixing ratio 0.0 -> 1.0
+                            const blend = exactPos - idx1; 
                             
                             const c1 = params.palette[idx1];
                             const c2 = params.palette[idx2];
                             
-                            // Mix 2 RGB colors
                             color = [
                                 c1[0] * (1 - blend) + c2[0] * blend,
                                 c1[1] * (1 - blend) + c2[1] * blend,
@@ -291,7 +295,6 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
                             ];
                         }
                         
-                        // Light and dark deviation (Light harmonic deviation 12%, Strong chaotic deviation 30%)
                         const spread = isChaotic ? 0.3 : 0.12;
                         const lightOffset = (rand() - 0.5) * spread; 
                         const rc = Math.min(255, Math.max(0, color[0] * (1 + lightOffset)));
@@ -345,4 +348,5 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
         ctx.fillStyle = ctx.createPattern(params.noiseC, 'repeat'); 
         ctx.fillRect(0, 0, w, h); 
         ctx.globalCompositeOperation = 'source-over';
+        }
 }
