@@ -349,6 +349,7 @@ async function drawCardToCanvas() {
     const c = document.createElement('canvas'); c.width = 900; c.height = 1200; const ctx = c.getContext('2d');
     ctx.fillStyle = '#181b22'; ctx.fillRect(0,0,900,1200);
     
+    // RENDER COVER (Giữ nguyên vì đang hoạt động tốt)
     const snapCov = document.createElement('canvas'); snapCov.width = 252; snapCov.height = 182;
     const sCovCtx = snapCov.getContext('2d');
     sCovCtx.save();
@@ -363,21 +364,9 @@ async function drawCardToCanvas() {
     
     ctx.fillStyle = 'rgba(24,27,34,0.9)'; ctx.fillRect(0, 560, 900, 100);
     
+    // RENDER AVATAR
     if(currentOutput.avatar) {
         const av = new Image(); av.src = currentOutput.avatar; await new Promise(r=>av.onload=r);
-        const snapAv = document.createElement('canvas'); snapAv.width = 200; snapAv.height = 200;
-        const sAvCtx = snapAv.getContext('2d');
-        
-        if (av.width < 200) sAvCtx.imageSmoothingEnabled = false;
-
-        sAvCtx.save();
-        sAvCtx.translate(avX, avY);
-        sAvCtx.scale(avScale, avScale);
-        const avRatio = av.width / av.height;
-        let aW = (avRatio > 1) ? 200 * avRatio : 200;
-        let aH = (avRatio > 1) ? 200 : 200 / avRatio;
-        sAvCtx.drawImage(av, 0, 0, av.width, av.height, 0, 0, aW, aH);
-        sAvCtx.restore();
         
         ctx.save(); 
         ctx.beginPath(); 
@@ -386,7 +375,20 @@ async function drawCardToCanvas() {
         ctx.clip();
         
         if (av.width < 200) ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(snapAv, 0, 0, 200, 200, 360, 470, 180, 180);
+
+        ctx.translate(360, 470);
+        
+        ctx.scale(0.9, 0.9);
+
+        ctx.translate(avX, avY);
+        ctx.scale(avScale, avScale);
+        
+        const avRatio = av.width / av.height;
+        let aW = (avRatio > 1) ? 200 * avRatio : 200;
+        let aH = (avRatio > 1) ? 200 : 200 / avRatio;
+        
+        ctx.drawImage(av, 0, 0, aW, aH);
+        
         ctx.restore();
         
         ctx.beginPath(); ctx.arc(450, 560, 90, 0, Math.PI*2); ctx.lineWidth = 6; ctx.strokeStyle = '#ff5c77'; ctx.stroke();
@@ -419,7 +421,7 @@ async function drawCardToCanvas() {
         ctx.fillText(hx.toUpperCase(), px + 55, py + 25);
     });
     return c.toDataURL('image/png');
-}
+} 
 
 let animReq;
 $('viewAnimBtn').onclick = () => {
