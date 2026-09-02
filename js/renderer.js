@@ -345,5 +345,4 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
         ctx.fillStyle = ctx.createPattern(params.noiseC, 'repeat'); 
         ctx.fillRect(0, 0, w, h); 
         ctx.globalCompositeOperation = 'source-over';
-    }
 }
