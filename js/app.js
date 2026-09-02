@@ -48,6 +48,10 @@ function renderInputPreview() {
         wrap.appendChild(img); wrap.appendChild(del); preview.appendChild(wrap);
     });
     status.textContent = files.length ? `${files.length} images selected.` : dict[currentLang].statusEmpty;
+    
+    if ($('clear')) {
+        $('clear').classList.toggle('hidden', files.length < 2);
+    }
 }
 
 function copyCSS(paletteHex) {
