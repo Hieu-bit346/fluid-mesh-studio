@@ -372,17 +372,12 @@ async function drawCardToCanvas() {
         snapAv.width = 200; snapAv.height = 200;
         const sAvCtx = snapAv.getContext('2d');
         
-        let drawW = avImgEl.width; 
-        let drawH = avImgEl.height;
-        
-        if (!drawW || drawW === 0) { 
-            const avRatio = av.width / av.height;
-            drawW = (avRatio > 1) ? 200 * avRatio : 200;
-            drawH = (avRatio > 1) ? 200 : 200 / avRatio;
-        }
+        const naturalRatio = av.naturalWidth / av.naturalHeight;
+        let drawW = (naturalRatio > 1) ? 200 * naturalRatio : 200;
+        let drawH = (naturalRatio > 1) ? 200 : 200 / naturalRatio;
 
         sAvCtx.save();
-        if (av.width < 200) sAvCtx.imageSmoothingEnabled = false;
+        if (av.naturalWidth < 200) sAvCtx.imageSmoothingEnabled = false;
         sAvCtx.translate(avX, avY);
         sAvCtx.scale(avScale, avScale);
         sAvCtx.drawImage(av, 0, 0, drawW, drawH);
@@ -394,10 +389,11 @@ async function drawCardToCanvas() {
         ctx.closePath(); 
         ctx.clip();
         
-        if (av.width < 200) ctx.imageSmoothingEnabled = false;
+        if (av.naturalWidth < 200) ctx.imageSmoothingEnabled = false;
         ctx.drawImage(snapAv, 0, 0, 200, 200, 360, 470, 180, 180);
         ctx.restore();
         
+        // Vẽ viền tròn
         ctx.beginPath(); ctx.arc(450, 560, 90, 0, Math.PI*2); ctx.lineWidth = 6; ctx.strokeStyle = '#ff5c77'; ctx.stroke();
     }
     
@@ -430,7 +426,6 @@ async function drawCardToCanvas() {
     });
     return c.toDataURL('image/png');
 }
-
 let animReq;
 $('viewAnimBtn').onclick = () => {
     if(!currentOutput) return; $('animModal').classList.remove('hidden');
