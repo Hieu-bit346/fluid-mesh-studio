@@ -3,7 +3,7 @@
 > An advanced generative art studio & Color DNA analyzer built with vanilla JavaScript and HTML5 Canvas.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Version](https://img.shields.io/badge/version-5.8-green.svg)
+![Version](https://img.shields.io/badge/version-2.7-green.svg)
 ![Pure JS](https://img.shields.io/badge/vanilla-JS-yellow.svg)
 
 ---
