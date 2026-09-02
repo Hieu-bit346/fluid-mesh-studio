@@ -237,6 +237,9 @@ let isDragging = false, startX, startY;
 const avImgEl = $('avImg'), covImgEl = $('covImg');
 const avBox = $('avatarBox'), covBox = $('coverBox');
 
+avImgEl.style.imageRendering = 'pixelated';
+covImgEl.style.imageRendering = 'pixelated';
+
 $('tabAv').onclick = () => {
     cardTab = 'avatar'; $('tabAv').className = 'primary'; $('tabCov').className = 'secondary';
     avBox.style.display = 'block'; covBox.style.display = 'none'; $('studioZoom').value = avScale;
@@ -261,21 +264,18 @@ function handleMove(e) {
     const cy = e.touches ? e.touches[0].clientY : e.clientY;
     
     if(cardTab === 'avatar') {
-    const boxSize = 200;
-    const avRatio = avImgEl.naturalWidth / avImgEl.naturalHeight;
-    const imgW = (avRatio > 1) ? 200 * avRatio : 200;
-    const imgH = (avRatio > 1) ? 200 : 200 / avRatio;
-    avX = Math.min(0, Math.max(boxSize - (imgW * avScale), cx - startX));
-    avY = Math.min(0, Math.max(boxSize - (imgH * avScale), cy - startY));
-    avImgEl.style.transform = `translate(${avX}px, ${avY}px) scale(${avScale})`;
+        const avRatio = avImgEl.naturalWidth / avImgEl.naturalHeight;
+        const imgW = (avRatio > 1) ? 200 * avRatio : 200;
+        const imgH = (avRatio > 1) ? 200 : 200 / avRatio;
+        avX = Math.min(0, Math.max(200 - (imgW * avScale), cx - startX));
+        avY = Math.min(0, Math.max(200 - (imgH * avScale), cy - startY));
+        avImgEl.style.transform = `translate(${avX}px, ${avY}px) scale(${avScale})`;
     } else {
-        const boxW = 252, boxH = 182;
         const outRatio = out.width / out.height;
-        let imgW, imgH;
-        if(outRatio > (252/182)) { imgH = 182; imgW = 182 * outRatio; }
-        else { imgW = 252; imgH = 252 / outRatio; }
-        covX = Math.min(0, Math.max(boxW - (imgW * covScale), cx - startX));
-        covY = Math.min(0, Math.max(boxH - (imgH * covScale), cy - startY));
+        const imgW = (outRatio > 252/182) ? 182 * outRatio : 252;
+        const imgH = (outRatio > 252/182) ? 182 : 252 / outRatio;
+        covX = Math.min(0, Math.max(252 - (imgW * covScale), cx - startX));
+        covY = Math.min(0, Math.max(182 - (imgH * covScale), cy - startY));
         covImgEl.style.transform = `translate(${covX}px, ${covY}px) scale(${covScale})`;
     }
 }
@@ -294,18 +294,18 @@ window.addEventListener('touchend', handleEnd);
 $('studioZoom').oninput = (e) => {
     const scale = parseFloat(e.target.value);
     if(cardTab === 'avatar') {
-    avScale = scale;
-    const avRatio = avImgEl.naturalWidth / avImgEl.naturalHeight;
-    const imgW = (avRatio > 1) ? 200 * avRatio : 200;
-    const imgH = (avRatio > 1) ? 200 : 200 / avRatio;
-    avX = Math.min(0, Math.max(200 - (imgW * avScale), avX));
-    avY = Math.min(0, Math.max(200 - (imgH * avScale), avY));
-    avImgEl.style.transform = `translate(${avX}px, ${avY}px) scale(${avScale})`;
+        avScale = scale;
+        const avRatio = avImgEl.naturalWidth / avImgEl.naturalHeight;
+        const imgW = (avRatio > 1) ? 200 * avRatio : 200;
+        const imgH = (avRatio > 1) ? 200 : 200 / avRatio;
+        avX = Math.min(0, Math.max(200 - (imgW * avScale), avX));
+        avY = Math.min(0, Math.max(200 - (imgH * avScale), avY));
+        avImgEl.style.transform = `translate(${avX}px, ${avY}px) scale(${avScale})`;
     } else {
         covScale = scale;
         const outRatio = out.width / out.height;
-        let imgW = (outRatio > 252/182) ? 182 * outRatio : 252;
-        let imgH = (outRatio > 252/182) ? 182 : 252 / outRatio;
+        const imgW = (outRatio > 252/182) ? 182 * outRatio : 252;
+        const imgH = (outRatio > 252/182) ? 182 : 252 / outRatio;
         covX = Math.min(0, Math.max(252 - (imgW * covScale), covX));
         covY = Math.min(0, Math.max(182 - (imgH * covScale), covY));
         covImgEl.style.transform = `translate(${covX}px, ${covY}px) scale(${covScale})`;
@@ -321,11 +321,11 @@ $('openCardStudioBtn').onclick = async () => {
     
     avImgEl.src = currentOutput.avatar;
     avImgEl.onload = () => {
-    const avRatio = avImgEl.naturalWidth / avImgEl.naturalHeight;
-    if (avRatio > 1) { avImgEl.style.height = '200px'; avImgEl.style.width = 'auto'; }
-    else { avImgEl.style.width = '200px'; avImgEl.style.height = 'auto'; }
-};
-avImgEl.style.transform = 'translate(0px, 0px) scale(1)';
+        const avRatio = avImgEl.naturalWidth / avImgEl.naturalHeight;
+        if (avRatio > 1) { avImgEl.style.height = '200px'; avImgEl.style.width = 'auto'; }
+        else { avImgEl.style.width = '200px'; avImgEl.style.height = 'auto'; }
+        avImgEl.style.transform = 'translate(0px, 0px) scale(1)';
+    };
     
     covImgEl.src = out.toDataURL('image/jpeg', 0.6);
     const outRatio = out.width / out.height;
@@ -367,6 +367,9 @@ async function drawCardToCanvas() {
         const av = new Image(); av.src = currentOutput.avatar; await new Promise(r=>av.onload=r);
         const snapAv = document.createElement('canvas'); snapAv.width = 200; snapAv.height = 200;
         const sAvCtx = snapAv.getContext('2d');
+        
+        if (av.width < 200) sAvCtx.imageSmoothingEnabled = false;
+
         sAvCtx.save();
         sAvCtx.translate(avX, avY);
         sAvCtx.scale(avScale, avScale);
@@ -374,10 +377,18 @@ async function drawCardToCanvas() {
         let aW = (avRatio > 1) ? 200 * avRatio : 200;
         let aH = (avRatio > 1) ? 200 : 200 / avRatio;
         sAvCtx.drawImage(av, 0, 0, av.width, av.height, 0, 0, aW, aH);
+        sAvCtx.restore();
         
-        ctx.save(); ctx.beginPath(); ctx.arc(450, 560, 90, 0, Math.PI*2); ctx.closePath(); ctx.clip();
-        ctx.drawImage(snapAv, 360, 470, 180, 180);
+        ctx.save(); 
+        ctx.beginPath(); 
+        ctx.arc(450, 560, 90, 0, Math.PI*2); 
+        ctx.closePath(); 
+        ctx.clip();
+        
+        if (av.width < 200) ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(snapAv, 0, 0, 200, 200, 360, 470, 180, 180);
         ctx.restore();
+        
         ctx.beginPath(); ctx.arc(450, 560, 90, 0, Math.PI*2); ctx.lineWidth = 6; ctx.strokeStyle = '#ff5c77'; ctx.stroke();
     }
     
