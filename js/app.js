@@ -100,10 +100,11 @@ async function generateProcess(){
     $('customAngle').classList.remove('error-border'); $('customRatioBox').style.boxShadow = ''; $('customSize').classList.remove('error-border');
     
     const styleMode=$('styleMode').value, angleMode=$('angleMode').value;
-  $('styleMode').addEventListener('change', (e) => {
+ $('styleMode').addEventListener('change', (e) => {
     if ($('polyModeBox')) $('polyModeBox').classList.toggle('hidden', e.target.value !== 'polygon');
     if ($('paperAngleBox')) $('paperAngleBox').classList.toggle('hidden', e.target.value !== 'paper');
     if ($('crystalModeBox')) $('crystalModeBox').classList.toggle('hidden', e.target.value !== 'crystal');
+    if ($('auroraModeBox')) $('auroraModeBox').classList.toggle('hidden', e.target.value !== 'aurora');
 });
     let bAngle = 'random';
     if(angleMode === 'custom') {
@@ -185,8 +186,9 @@ async function generateProcess(){
    const polyModeOpt = $('polyMode') ? $('polyMode').value : 'flat';
     const pAngleOpt = $('paperAngle') ? +$('paperAngle').value : 45;
     const crystalModeOpt = $('crystalMode') ? $('crystalMode').value : 'harmonic';
+    const auroraModeOpt = $('auroraMode') ? $('auroraMode').value : 'glass';
 
-    const params = { seed: rngSeed, palette, waveCount, style: styleMode, polyMode: polyModeOpt, paperAngle: pAngleOpt, crystalMode: crystalModeOpt, baseAngle: bAngle, soft: +$('soft').value / 100, grain: +$('grain').value / 100, avgBg, layers, basePalette: palette, baseAvgBg: avgBg, baseLayers: layers };
+    const params = { seed: rngSeed, palette, waveCount, style: styleMode, polyMode: polyModeOpt, paperAngle: pAngleOpt, crystalMode: crystalModeOpt, auroraMode: auroraModeOpt, baseAngle: bAngle, soft: +$('soft').value / 100, grain: +$('grain').value / 100, avgBg, layers, basePalette: palette, baseAvgBg: avgBg, baseLayers: layers };
     
     await renderCanvas(params, out, targetW, targetH, 0);
 
