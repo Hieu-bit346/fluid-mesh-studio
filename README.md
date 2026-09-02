@@ -19,6 +19,7 @@ Experience the tool directly in your browser:
 ## 📖 Overview
 
 **Fluid Mesh Studio HD** extracts key color palettes from uploaded images and generates fluid mesh waves, paper-cut layers, aurora fields, or angular polygon graphics. It features interactive character/item info card creation, real-time hue shifting, radar metrics visualization, and color palette exportation.
+
 This project is built and optimized with the support of the AI agent Gemini (Google).
 
 ---
