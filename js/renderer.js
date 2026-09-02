@@ -187,7 +187,7 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
             ctx.restore();
             
         // AURORA
-       } else if (params.style === 'aurora') {
+        } else if (params.style === 'aurora') {
             const isGlass = params.auroraMode === 'glass';
 
             if (i === 0) {
@@ -346,3 +346,4 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
         ctx.fillRect(0, 0, w, h); 
         ctx.globalCompositeOperation = 'source-over';
     }
+}
