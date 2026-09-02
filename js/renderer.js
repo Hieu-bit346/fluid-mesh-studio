@@ -325,6 +325,7 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
     
     ctx.globalCompositeOperation = 'source-over'; 
     ctx.globalAlpha = 1.0;
+}
     if (params.grain > 0) {
         if (!params.noiseC) {
             params.noiseC = document.createElement('canvas'); 
