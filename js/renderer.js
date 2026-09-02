@@ -187,13 +187,28 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
             ctx.restore();
             
         // AURORA
-        } else if (params.style === 'aurora') {
-            ctx.fillStyle = grad;
-            ctx.globalAlpha = Math.max(0.1, 2.0 / params.waveCount);
-            if (params.soft > 0) { 
-                ctx.shadowColor = solidColor; 
-                ctx.shadowBlur = diag * 0.25 * params.soft; 
+       } else if (params.style === 'aurora') {
+            const isGlass = params.auroraMode === 'glass';
+
+            if (i === 0) {
+                ctx.save();
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.globalAlpha = 1.0;
+                ctx.fillStyle = isGlass ? `rgb(${params.avgBg.join(',')})` : '#0a0a14';
+                ctx.fillRect(-w, -h, w * 3, h * 3); 
+                ctx.restore();
             }
+
+            ctx.fillStyle = grad;
+            ctx.globalCompositeOperation = isGlass ? 'multiply' : 'screen';
+            ctx.globalAlpha = isGlass ? 0.5 : Math.max(0.25, 4.0 / params.waveCount);
+
+            if (params.soft > 0) {
+                ctx.shadowColor = solidColor;
+                ctx.shadowBlur = diag * (isGlass ? 0.08 : 0.3) * params.soft; 
+                ctx.shadowOffsetY = 0;
+            }
+            
             ctx.fill();
 
         // MESH GLOW (Fluid)
