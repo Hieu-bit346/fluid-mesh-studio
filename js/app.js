@@ -364,37 +364,43 @@ async function drawCardToCanvas() {
     
     ctx.fillStyle = 'rgba(24,27,34,0.9)'; ctx.fillRect(0, 560, 900, 100);
     
-    // --- 2. RENDER AVATAR
-    if(currentOutput.avatar) {
-        const av = new Image(); av.src = currentOutput.avatar; await new Promise(r=>av.onload=r);
-        
+    // --- 2. RENDER AVATAR ---
+    if(avImgEl && avImgEl.src) {
         const snapAv = document.createElement('canvas'); 
-        snapAv.width = 200; snapAv.height = 200;
+        snapAv.width = 200; 
+        snapAv.height = 200;
         const sAvCtx = snapAv.getContext('2d');
         
-        const naturalRatio = av.naturalWidth / av.naturalHeight;
+        const nw = avImgEl.naturalWidth || 200;
+        const nh = avImgEl.naturalHeight || 200;
+        const naturalRatio = nw / nh;
+        
         let drawW = (naturalRatio > 1) ? 200 * naturalRatio : 200;
         let drawH = (naturalRatio > 1) ? 200 : 200 / naturalRatio;
 
         sAvCtx.save();
-        if (av.naturalWidth < 200) sAvCtx.imageSmoothingEnabled = false;
+        if (nw < 200) sAvCtx.imageSmoothingEnabled = false;
         sAvCtx.translate(avX, avY);
         sAvCtx.scale(avScale, avScale);
-        sAvCtx.drawImage(av, 0, 0, drawW, drawH);
+        
+        sAvCtx.drawImage(avImgEl, 0, 0, drawW, drawH);
         sAvCtx.restore();
         
         ctx.save(); 
         ctx.beginPath(); 
-        ctx.arc(450, 560, 90, 0, Math.PI*2); 
+        ctx.arc(450, 560, 90, 0, Math.PI * 2); 
         ctx.closePath(); 
         ctx.clip();
         
-        if (av.naturalWidth < 200) ctx.imageSmoothingEnabled = false;
+        if (nw < 200) ctx.imageSmoothingEnabled = false;
         ctx.drawImage(snapAv, 0, 0, 200, 200, 360, 470, 180, 180);
         ctx.restore();
         
-        // Vẽ viền tròn
-        ctx.beginPath(); ctx.arc(450, 560, 90, 0, Math.PI*2); ctx.lineWidth = 6; ctx.strokeStyle = '#ff5c77'; ctx.stroke();
+        ctx.beginPath(); 
+        ctx.arc(450, 560, 90, 0, Math.PI * 2); 
+        ctx.lineWidth = 6; 
+        ctx.strokeStyle = '#ff5c77'; 
+        ctx.stroke();
     }
     
     // --- 3. RENDER TEXT & RADAR ---
@@ -426,6 +432,7 @@ async function drawCardToCanvas() {
     });
     return c.toDataURL('image/png');
 }
+
 let animReq;
 $('viewAnimBtn').onclick = () => {
     if(!currentOutput) return; $('animModal').classList.remove('hidden');
