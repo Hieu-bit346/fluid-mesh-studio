@@ -192,10 +192,11 @@ async function renderCanvas(params, targetCanvas, w, h, timeOffset = 0) {
 
             if (i === 0) {
                 ctx.save();
+                ctx.setTransform(1, 0, 0, 1, 0, 0); 
                 ctx.globalCompositeOperation = 'source-over';
                 ctx.globalAlpha = 1.0;
                 ctx.fillStyle = isGlass ? `rgb(${params.avgBg.join(',')})` : '#0a0a14';
-                ctx.fillRect(-w, -h, w * 3, h * 3); 
+                ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height); 
                 ctx.restore();
             }
 
